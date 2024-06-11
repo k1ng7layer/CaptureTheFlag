@@ -2,10 +2,13 @@
 using Services;
 using Services.Input;
 using UnityEngine;
+using Zenject;
 
 namespace UI.Input
 {
-    public class InputController : UiController<JoystickView>, IDisposable
+    public class InputController : UiController<JoystickView>, 
+        IInitializable, 
+        IDisposable
     {
         private readonly IInputService _inputService;
 
@@ -13,8 +16,8 @@ namespace UI.Input
         {
             _inputService = inputService;
         }
-
-        public void Init()
+        
+        public void Initialize()
         {
             View.Dragged += OnMovement;
         }

@@ -1,4 +1,5 @@
-﻿using Mirror;
+﻿using System;
+using Mirror;
 using Settings;
 using UnityEngine;
 
@@ -12,13 +13,23 @@ namespace Views
         [SerializeField] private MeshRenderer _meshRenderer;
         [SerializeField] private PlayerColorSettings _playerColorSettings;
 
+        public event Action<IEntityView> LocalStarted;
         public Vector3 Position => transform.position;
         public bool IsLocal => isLocalPlayer;
         
         public override void OnStartClient()
         {
             SyncColor(_color, _color);
+            LocalStarted?.Invoke(this);
         }
+
+        public override void OnStartLocalPlayer()
+        {
+            base.OnStartLocalPlayer();
+            
+            Debug.Log($"OnStartLocalPlayer");
+        }
+        
 
         private void SyncColor(EColor old, EColor newValue)
         {

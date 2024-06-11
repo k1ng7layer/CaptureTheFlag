@@ -15,22 +15,11 @@ namespace Services.Network
             base.OnClientConnect();
 
             NetworkClient.Send(new SpawnPlayerMessage());
-           // SpawnPlayer();
         }
 
-        public override void OnStartServer()
+        public override void OnServerAddPlayer(NetworkConnectionToClient conn)
         {
-            Debug.Log($"NetManager OnStartServer");
-            base.OnStartServer();
-            
-            //NetworkServer.RegisterHandler<SpawnPlayerMessage>(Spawn);
-        }
-
-        private void Spawn(NetworkConnectionToClient conn, SpawnPlayerMessage msg, int chId)
-        {
-            // var player = Instantiate(playerPrefab);
-            // //     
-            // NetworkServer.AddPlayerForConnection(conn, player);
+            base.OnServerAddPlayer(conn);
         }
     }
 }

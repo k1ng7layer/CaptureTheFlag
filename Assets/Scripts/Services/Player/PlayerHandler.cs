@@ -1,31 +1,32 @@
+using System;
+using Entitites;
 using Services.Input;
 using Services.Spawn;
 using Systems;
 using Views;
+using Zenject;
 
 namespace Services.Player
 {
-    public class PlayerHandler
+    public class PlayerHandler : IInitializable, IDisposable
     {
         private readonly NetworkSpawnService _spawnService;
-        private readonly IInputService _inputService;
-        private PlayerMovementSystem _playerMovementSystem;
 
-        public PlayerHandler(NetworkSpawnService spawnService, IInputService inputService)
+        public PlayerHandler(NetworkSpawnService spawnService)
         {
             _spawnService = spawnService;
-            _inputService = inputService;
         }
-
-        public void Init()
+        
+        public Entity LocalPlayerEntity { get; private set; }
+        
+        public void Initialize()
         {
             _spawnService.PlayerSpawned += OnPlayerSpawned;
         }
 
-        public void Tick()
+        public void Dispose()
         {
-            if (_playerMovementSystem != null)
-                _playerMovementSystem.Update();
+            _spawnService.PlayerSpawned -= OnPlayerSpawned;
         }
 
         private void OnPlayerSpawned(IEntityView entityView)
@@ -33,9 +34,7 @@ namespace Services.Player
             var entity = new Entitites.Player(entityView);
 
             if (entityView.IsLocal)
-            {
-                _playerMovementSystem = new PlayerMovementSystem(entity, _inputService);
-            }
+                LocalPlayerEntity = entity;
         }
     }
 }

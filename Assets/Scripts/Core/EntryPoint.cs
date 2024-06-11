@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Mirror;
 using Services.Input.Impl;
 using Services.MessageDispatcher;
@@ -9,34 +10,41 @@ using Settings;
 using Systems;
 using UI.Input;
 using UnityEngine;
+using Zenject;
 
 namespace Core
 {
-    public class EntryPoint : MonoBehaviour
+    public class EntryPoint : ITickable, ILateTickable
     {
-        [SerializeField] private JoystickView _joystickView;
-        [SerializeField] private NetManager _networkManager;
-        [SerializeField] private PrefabBase _prefabBase;
+        private readonly List<IUpdateSystem> _updateSystems = new();
+        private readonly List<ILateSystem> _lateSystems = new();
 
-        private PlayerHandler _playerHandler;
-        
-        private void Start()
+        public EntryPoint(List<ISystem> systems)
         {
-            var inputService = new InputService();
-            var inputController = new InputController(inputService);
-            var dispatcherService = new MirrorMessageDispatcher();
-            var playerSpawnService = new NetworkSpawnService(dispatcherService, _prefabBase);
-            _playerHandler = new PlayerHandler(playerSpawnService, inputService);
-            
-            _playerHandler.Init();
-            playerSpawnService.Init();
-            inputController.Init();
+            foreach (var system in systems)
+            {
+                if (system is IUpdateSystem updateSystem)
+                    _updateSystems.Add(updateSystem);
+                
+                if (system is ILateSystem lateSystem)
+                    _lateSystems.Add(lateSystem);
+            }
         }
 
-        private void Update()
+        public void Tick()
         {
-            if (_playerHandler != null)
-                _playerHandler.Tick();
+            foreach (var updateSystem in _updateSystems)
+            {
+                updateSystem.Update();
+            }
+        }
+
+        public void LateTick()
+        {
+            foreach (var lateSystem in _lateSystems)
+            {
+                lateSystem.OnLate();
+            }
         }
     }
 }

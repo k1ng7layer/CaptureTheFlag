@@ -4,12 +4,14 @@ using Mirror;
 using Services.MessageDispatcher;
 using Services.Network.Handlers;
 using Settings;
+using UnityEngine;
 using Views;
+using Zenject;
 using Object = UnityEngine.Object;
 
 namespace Services.Spawn
 {
-    public class NetworkSpawnService : IDisposable
+    public class NetworkSpawnService : IInitializable, IDisposable
     {
         private readonly INetworkMessageDispatcher _networkMessageDispatcher;
         private readonly PrefabBase _prefabBase;
@@ -25,18 +27,25 @@ namespace Services.Spawn
         }
 
         public event Action<IEntityView> PlayerSpawned; 
-
-        public void Init()
+        
+        public void Initialize()
         {
-            _networkMessageDispatcher.Register<SpawnPlayerMessage>(SpawnPlayer);
+            _networkMessageDispatcher.Register<SpawnPlayerMessage>(ServerSpawnPlayer);
+            
+            NetworkClient.RegisterPrefab(_prefabBase.PlayerPrefab, OnClientPlayerSpawn, OnPlayerDeSpawn);
 
             foreach (var color in (EColor[])Enum.GetValues(typeof(EColor)))
             {
                 _colors.Enqueue(color);
             }
         }
-
-        private void SpawnPlayer(NetworkConnectionToClient conn, SpawnPlayerMessage msg)
+        
+        public void Dispose()
+        {
+            _networkMessageDispatcher.Unregister<SpawnPlayerMessage>();
+        }
+        
+        private void ServerSpawnPlayer(NetworkConnectionToClient conn, SpawnPlayerMessage msg)
         {
             var player = Object.Instantiate(_prefabBase.PlayerPrefab);
             var view = player.GetComponent<PlayerView>();
@@ -48,10 +57,28 @@ namespace Services.Spawn
             
             PlayerSpawned?.Invoke(view);
         }
-
-        public void Dispose()
+        
+        private GameObject OnClientPlayerSpawn(Vector3 position, uint assetId)
         {
-            _networkMessageDispatcher.Unregister<SpawnPlayerMessage>();
+            var player = _prefabBase.PlayerPrefab.GetComponent<PlayerView>();
+            var obj = Object.Instantiate(player.gameObject);
+            var view = obj.GetComponent<IEntityView>();
+            
+            view.LocalStarted += OnLocalPlayerSpawned;
+            
+            return obj;
+        }
+        
+        private void OnPlayerDeSpawn(GameObject gameObject)
+        {
+            var view = gameObject.GetComponent<PlayerView>();
+            view.LocalStarted -= OnLocalPlayerSpawned;
+            Object.Destroy(gameObject);
+        }
+
+        private void OnLocalPlayerSpawned(IEntityView view)
+        {
+            PlayerSpawned?.Invoke(view);
         }
     }
 }
