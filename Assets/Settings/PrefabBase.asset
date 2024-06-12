@@ -12,4 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8473c272d0b74bd08097e596bdd1d087, type: 3}
   m_Name: PrefabBase
   m_EditorClassIdentifier: 
-  _playerPrefab: {fileID: 4420322884622453456, guid: becc506f05c4d1c41889c3c61a98738e, type: 3}
+  _settings:
+  - Name: Player
+    Prefab: {fileID: 4420322884622453456, guid: becc506f05c4d1c41889c3c61a98738e, type: 3}
+  - Name: Flag
+    Prefab: {fileID: 856929059503141057, guid: 7c10e33bef89d5d4f8201daa81230fc4, type: 3}

@@ -1,40 +1,27 @@
 using System;
+using System.Collections.Generic;
 using Entitites;
 using Services.Input;
-using Services.Spawn;
+using Services.Presenters;
 using Systems;
 using Views;
 using Zenject;
 
 namespace Services.Player
 {
-    public class PlayerHandler : IInitializable, IDisposable
+    public class PlayerHandler
     {
-        private readonly NetworkSpawnService _spawnService;
-
-        public PlayerHandler(NetworkSpawnService spawnService)
-        {
-            _spawnService = spawnService;
-        }
+        private readonly List<GameEntity> _players = new();
         
-        public Entity LocalPlayerEntity { get; private set; }
-        
-        public void Initialize()
-        {
-            _spawnService.PlayerSpawned += OnPlayerSpawned;
-        }
+        public GameEntity LocalPlayerEntityEntity { get; private set; }
+        public List<GameEntity> Players => _players;
 
-        public void Dispose()
+        public void AddPlayer(GameEntity player)
         {
-            _spawnService.PlayerSpawned -= OnPlayerSpawned;
-        }
-
-        private void OnPlayerSpawned(IEntityView entityView)
-        {
-            var entity = new Entitites.Player(entityView);
-
-            if (entityView.IsLocal)
-                LocalPlayerEntity = entity;
+            if (player.IsLocalPlayer)
+                LocalPlayerEntityEntity = player;
+            
+            _players.Add(player);
         }
     }
 }

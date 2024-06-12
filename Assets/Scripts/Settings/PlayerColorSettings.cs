@@ -6,8 +6,8 @@ namespace Settings
     [Serializable]
     public class MaterialSettings
     {
-        public EColor Color;
-        public Material Material;
+        public EColor ColorType;
+        public Color Color;
     }
     
     [CreateAssetMenu(menuName = "settings/"+ nameof(PlayerColorSettings), fileName = nameof(PlayerColorSettings))]
@@ -15,12 +15,12 @@ namespace Settings
     {
         [SerializeField] private MaterialSettings[] _materials;
 
-        public Material Get(EColor color)
+        public Color Get(EColor color)
         {
             foreach (var materialSettings in _materials)
             {
-                if (materialSettings.Color == color)
-                    return materialSettings.Material;
+                if (materialSettings.ColorType == color)
+                    return materialSettings.Color;
             }
 
             throw new Exception($"[{nameof(PlayerColorSettings)}] cant find material of color {color}");

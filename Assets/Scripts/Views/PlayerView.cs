@@ -15,6 +15,7 @@ namespace Views
 
         public event Action<IEntityView> LocalStarted;
         public Vector3 Position => transform.position;
+        public Transform Transform => transform;
         public bool IsLocal => isLocalPlayer;
         
         public override void OnStartClient()
@@ -30,11 +31,10 @@ namespace Views
             Debug.Log($"OnStartLocalPlayer");
         }
         
-
         private void SyncColor(EColor old, EColor newValue)
         {
-            var material = _playerColorSettings.Get(newValue);
-            _meshRenderer.sharedMaterial = material;
+            var color = _playerColorSettings.Get(newValue);
+            _meshRenderer.material.color = color;
         }
 
         [Server]
@@ -53,6 +53,11 @@ namespace Views
         public void SetRotation(Quaternion rotation)
         {
             transform.rotation = rotation;
+        }
+
+        public void SetColor(EColor color)
+        {
+            OnSeverColorChange(color);
         }
     }
 }

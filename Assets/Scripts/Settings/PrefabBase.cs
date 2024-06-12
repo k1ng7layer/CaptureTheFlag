@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Settings
@@ -5,8 +6,23 @@ namespace Settings
     [CreateAssetMenu(menuName = "settings/"+ nameof(PrefabBase), fileName = nameof(PrefabBase))]
     public class PrefabBase : ScriptableObject
     {
-        [SerializeField] private GameObject _playerPrefab;
+        [SerializeField] private PrefabSettings[] _settings;
+        public GameObject Get(string prefabName)
+        {
+            foreach (var setting in _settings)
+            {
+                if (setting.Name == prefabName)
+                    return setting.Prefab;
+            }
 
-        public GameObject PlayerPrefab => _playerPrefab;
+            throw new Exception($"[{nameof(PrefabBase)}] can't find prefab with name {prefabName}");
+        }
+    }
+
+    [Serializable]
+    class PrefabSettings
+    {
+        public string Name;
+        public GameObject Prefab;
     }
 }
