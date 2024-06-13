@@ -2,7 +2,7 @@
 
 namespace Services.Network.Handlers
 {
-    public struct RequestPlayerSpawnMessage : NetworkMessage
+    public struct PlayerReadyMessage : NetworkMessage
     {
         
     }

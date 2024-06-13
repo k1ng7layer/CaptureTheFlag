@@ -1,11 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Entitites;
-using Services.Input;
-using Services.Presenters;
-using Systems;
-using Views;
-using Zenject;
 
 namespace Services.Player
 {

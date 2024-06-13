@@ -1,14 +1,14 @@
 ﻿using Core;
 using Entitites;
 using Factories;
-using Presenters;
+using GameResult.Impl;
+using Services.FlagRepository.Impl;
+using Services.Flags;
 using Services.Flags.Impl;
 using Services.Input.Impl;
 using Services.Map;
 using Services.MessageDispatcher;
 using Services.Player;
-using Services.Presenters;
-using Services.Spawn;
 using Services.Spawn.Impl;
 using Services.Time.Impl;
 using Systems;
@@ -39,23 +39,25 @@ namespace Installers
             Container.BindInterfacesAndSelfTo<MirrorMessageDispatcher>().AsSingle();
             Container.BindInterfacesAndSelfTo<InputService>().AsSingle();
             Container.BindInterfacesAndSelfTo<PlayerHandler>().AsSingle();
-            Container.BindInterfacesAndSelfTo<FlagsService>().AsSingle();
+            Container.BindInterfacesAndSelfTo<FlagSpawnService>().AsSingle();
+            Container.BindInterfacesAndSelfTo<PlayerSpawnService>().AsSingle();
             Container.BindInterfacesAndSelfTo<UnityTimeProvider>().AsSingle();
+            Container.BindInterfacesAndSelfTo<FlagRepository>().AsSingle();
+            Container.BindInterfacesAndSelfTo<GameResultService>().AsSingle();
         }
 
         private void BindSystems()
         {
-            Container.BindInterfacesAndSelfTo<ServerInitializePlayerSystem>().AsSingle();
+            //Container.BindInterfacesAndSelfTo<ServerInitializePlayerSystem>().AsSingle();
             Container.BindInterfacesAndSelfTo<ClientInitializePlayerSystem>().AsSingle();
             Container.BindInterfacesAndSelfTo<PlayerMovementSystem>().AsSingle();
             Container.BindInterfacesAndSelfTo<FlagCaptureSystem>().AsSingle();
             Container.BindInterfacesAndSelfTo<TestSystem>().AsSingle();
+            Container.BindInterfacesAndSelfTo<GameInitializeSystem>().AsSingle();
         }
 
         private void BindFactories()
         {
-            Container.BindFactory<IEntityView, GameEntity, PlayerPresenter, PlayerPresenterFactory>().AsSingle();
-            Container.BindFactory<IEntityView, GameEntity, FlagPresenter, FlagPresenterFactory>().AsSingle();
             Container.BindFactory<GameEntity, GameEntityFactory>().AsSingle();
             Container.BindFactory<FlagEntity, FlagEntityFactory>().AsSingle();
         }

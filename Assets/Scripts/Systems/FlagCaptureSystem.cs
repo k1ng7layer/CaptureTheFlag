@@ -1,5 +1,7 @@
-﻿using Mirror;
-using Services.Flags;
+﻿using Entitites;
+using Mirror;
+using Services.FlagRepository;
+using Services.FlagRepository.Impl;
 using Services.Player;
 using Services.Time;
 using UnityEngine;
@@ -9,35 +11,42 @@ namespace Systems
     public class FlagCaptureSystem : IUpdateSystem
     {
         private readonly ITimeProvider _timeProvider;
-        private readonly IFlagsService _flagsService;
         private readonly PlayerHandler _playerHandler;
+        private readonly IFlagRepository _flagRepository;
 
         public FlagCaptureSystem(
-            ITimeProvider timeProvider,
-            IFlagsService flagsService, 
-            PlayerHandler playerHandler
+            ITimeProvider timeProvider, 
+            PlayerHandler playerHandler,
+            IFlagRepository flagRepository
         )
         {
             _timeProvider = timeProvider;
-            _flagsService = flagsService;
             _playerHandler = playerHandler;
+            _flagRepository = flagRepository;
         }
         
         public void Update()
         {
-            if (!NetworkServer.activeHost)
-                return;
-            
             foreach (var player in _playerHandler.Players)
             {
-                var flag = _flagsService.Flags[player.Color];
+                CaptureFlags(player);
+            }   
+        }
 
+        private void CaptureFlags(GameEntity player)
+        {
+            if (!_flagRepository.Flags.TryGetValue(player.Color, out var flags))
+                return;
+            
+            foreach (var flag in flags)
+            {
                 if (flag.Captured)
                     continue;
                 
                 var dist2 = (flag.Position - player.Position).sqrMagnitude;
                 
-                Debug.Log($"dist2 {dist2}, check: {flag.CaptureRadius * flag.CaptureRadius}" );
+                Debug.Log($"Flag posit: {flag.Position}");
+                Debug.Log($"dist2 {dist2}, check: {flag.CaptureRadius * flag.CaptureRadius}, color: {flag.Color}, player pos: {player.Position}" );
                 
                 if (dist2 >= flag.CaptureRadius * flag.CaptureRadius)
                     continue;
@@ -50,7 +59,6 @@ namespace Systems
                 
                 if (flag.CaptureTimeLeft <= 0)
                     flag.ChangeCaptured(true);
-                
             }
         }
     }

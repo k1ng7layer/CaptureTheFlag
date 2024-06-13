@@ -19,6 +19,7 @@ namespace Entitites
         {
             Position = position;
             PositionChanged?.Invoke(position);
+            Debug.Log($"SetPosition: {position}");
         }
 
         public void SetRotation(Quaternion rotation)

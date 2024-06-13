@@ -14,7 +14,7 @@ namespace Services.Network
             Debug.Log($"NetManager OnClientConnect");
             base.OnClientConnect();
 
-            NetworkClient.Send(new RequestPlayerSpawnMessage());
+            NetworkClient.Send(new PlayerReadyMessage());
         }
 
         public override void OnServerAddPlayer(NetworkConnectionToClient conn)

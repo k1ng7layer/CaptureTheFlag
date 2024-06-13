@@ -1,63 +1,30 @@
 ﻿using System;
+using Entitites;
 using Mirror;
+using Services.Network.Handlers;
 using Settings;
 using UnityEngine;
 
 namespace Views
 {
-    public class PlayerView : NetworkBehaviour, IEntityView
+    public class PlayerView : GameEntityView
     {
-        [SyncVar(hook = nameof(SyncColor))]
-        [SerializeField] private EColor _color;
-
-        [SerializeField] private MeshRenderer _meshRenderer;
-        [SerializeField] private PlayerColorSettings _playerColorSettings;
-
-        public event Action<IEntityView> LocalStarted;
-        public Vector3 Position => transform.position;
-        public Transform Transform => transform;
-        public bool IsLocal => isLocalPlayer;
+        private GameEntity _entity;
         
-        public override void OnStartClient()
+        public override void Initialize(GameEntity entity)
         {
-            SyncColor(_color, _color);
-            LocalStarted?.Invoke(this);
+            base.Initialize(entity);
+
+            _entity = entity;
         }
 
-        public override void OnStartLocalPlayer()
+        private void Update()
         {
-            base.OnStartLocalPlayer();
+            if (_entity == null || isOwned)  
+                    return;
             
-            Debug.Log($"OnStartLocalPlayer");
-        }
-        
-        private void SyncColor(EColor old, EColor newValue)
-        {
-            var color = _playerColorSettings.Get(newValue);
-            _meshRenderer.material.color = color;
-        }
-
-        [Server]
-        public void OnSeverColorChange(EColor color)
-        {
-            _color = color;
-            Debug.Log($"{isLocalPlayer} {isServer}");
-            SyncColor(_color, _color);
-        }
-
-        public void SetPosition(Vector3 position)
-        {
-            transform.position = position;
-        }
-
-        public void SetRotation(Quaternion rotation)
-        {
-            transform.rotation = rotation;
-        }
-
-        public void SetColor(EColor color)
-        {
-            OnSeverColorChange(color);
+            _entity.SetPosition(transform.position);
+            _entity.SetRotation(transform.rotation);
         }
     }
 }

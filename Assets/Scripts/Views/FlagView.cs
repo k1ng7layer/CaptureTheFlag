@@ -1,69 +1,45 @@
 ﻿using System;
+using Entitites;
 using Mirror;
 using Settings;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Views
 {
-    public class FlagView : NetworkBehaviour, IFlagView
+    public class FlagView : GameEntityView
     {
-        [SyncVar(hook = nameof(SyncColor))]
-        [SerializeField] private EColor _color;
+        [SerializeField] private SpriteRenderer _radiusSprite;
         
-        [SerializeField] private MeshRenderer _meshRenderer;
-        [SerializeField] private PlayerColorSettings _playerColorSettings;
-        [SerializeField] private SpriteRenderer _radius;
-        
-        public event Action<IEntityView> LocalStarted;
-        public Vector3 Position => transform.position;
-        public Transform Transform => transform;
-        public bool IsLocal => isLocalPlayer;
-        
-        public override void OnStartClient()
+        protected override void SetupAsServerObject(GameEntity entity)
         {
-            SyncColor(_color, _color);
-            LocalStarted?.Invoke(this);
+            base.SetupAsServerObject(entity);
+            var flag = (FlagEntity)entity;
+            flag.CaptureRadiusChanged += SetCaptureRadius;
+            flag.CaptureCompleted += Captured;
         }
         
-        public void SetPosition(Vector3 position)
+        private void Captured()
         {
-            transform.position = position;
+            gameObject.SetActive(false);
+            
+            SetCaptured(true);
         }
 
-        public void SetRotation(Quaternion rotation)
+        protected override void OnColorChanged(EColor value)
         {
-            transform.rotation = rotation;
-        }
-
-        public void SetColor(EColor color)
-        {
-            OnSeverColorChange(color);
+            _radiusSprite.material.color = playerColorSettings.Get(value);
         }
 
         public void SetCaptureRadius(float value)
         {
-            _radius.size = new Vector2(value, value);
+            _radiusSprite.size = new Vector2(value, value);
         }
 
         [ClientRpc]
         public void SetCaptured(bool value)
         {
             gameObject.SetActive(!value);
-        }
-        
-        private void SyncColor(EColor old, EColor newValue)
-        {
-            var color = _playerColorSettings.Get(newValue);
-            _meshRenderer.material.color = color;
-            _radius.sharedMaterial.color = color;
-        }
-
-        [Server]
-        public void OnSeverColorChange(EColor color)
-        {
-            _color = color;
-            Debug.Log($"{isLocalPlayer} {isServer}");
-            SyncColor(_color, _color);
         }
     }
 }

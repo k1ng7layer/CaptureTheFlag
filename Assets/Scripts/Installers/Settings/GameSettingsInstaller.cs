@@ -10,12 +10,14 @@ namespace Installers.Settings
         [SerializeField] private PrefabBase _prefabBase;
         [SerializeField] private PlayerColorSettings _playerColorSettings;
         [SerializeField] private FlagSettings _flagSettings;
+        [SerializeField] private GameSettings _gameSettings;
 
         public override void InstallBindings()
         {
             Container.BindInstance(_prefabBase).AsSingle();
             Container.BindInstance(_playerColorSettings).AsSingle();
             Container.BindInstance(_flagSettings).AsSingle();
+            Container.BindInstance(_gameSettings).AsSingle();
         }
     }
 }

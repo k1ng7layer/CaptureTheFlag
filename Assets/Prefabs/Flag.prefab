@@ -201,8 +201,8 @@ MonoBehaviour:
   syncInterval: 0
   _color: 0
   _meshRenderer: {fileID: 856929058163881765}
-  _playerColorSettings: {fileID: 11400000, guid: e7e3282dcc6e96a4ba908e5ae20fc989, type: 2}
-  _radius: {fileID: 6956622612545745539}
+  playerColorSettings: {fileID: 11400000, guid: e7e3282dcc6e96a4ba908e5ae20fc989, type: 2}
+  _radiusSprite: {fileID: 6956622612545745539}
 --- !u!1 &6265539142499785705
 GameObject:
   m_ObjectHideFlags: 0
