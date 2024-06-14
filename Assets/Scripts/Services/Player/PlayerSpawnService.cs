@@ -13,18 +13,18 @@ namespace Services.Player
     {
         private readonly ISpawnService _spawnService;
         private readonly PlayerHandler _playerHandler;
-        private readonly GameEntityFactory _gameEntityFactory;
+        private readonly PlayerEntityFactory _playerEntityFactory;
         private readonly Dictionary<int, GameEntity> _gameEntities = new();
 
         public PlayerSpawnService(
             ISpawnService spawnService, 
             PlayerHandler playerHandler,
-            GameEntityFactory gameEntityFactory
+            PlayerEntityFactory playerEntityFactory
         )
         {
             _spawnService = spawnService;
             _playerHandler = playerHandler;
-            _gameEntityFactory = gameEntityFactory;
+            _playerEntityFactory = playerEntityFactory;
         }
         
         public GameEntity SpawnPlayer(int connectionId, EColor color)
@@ -35,11 +35,12 @@ namespace Services.Player
             
             //NetworkServer.Spawn(playerView.Transform.gameObject, connection);
           
-            var playerEntity = _gameEntityFactory.Create();
+            var playerEntity = _playerEntityFactory.Create();
 
             playerEntity.IsServerObject = true;
             playerEntity.SetColor(color);
             playerEntity.SetIsLocalPlayer(connectionId == NetworkClient.connection.connectionId);
+            playerEntity.ChangeCaptureAbility(true);
             playerView.Initialize(playerEntity);
             
             _playerHandler.AddPlayer(playerEntity);

@@ -52,13 +52,13 @@ namespace Installers
             Container.BindInterfacesAndSelfTo<ClientInitializePlayerSystem>().AsSingle();
             Container.BindInterfacesAndSelfTo<PlayerMovementSystem>().AsSingle();
             Container.BindInterfacesAndSelfTo<FlagCaptureSystem>().AsSingle();
-            Container.BindInterfacesAndSelfTo<TestSystem>().AsSingle();
             Container.BindInterfacesAndSelfTo<GameInitializeSystem>().AsSingle();
+            Container.BindInterfacesAndSelfTo<FlagCaptureTimeoutSystem>().AsSingle();
         }
 
         private void BindFactories()
         {
-            Container.BindFactory<GameEntity, GameEntityFactory>().AsSingle();
+            Container.BindFactory<PlayerEntity, PlayerEntityFactory>().AsSingle();
             Container.BindFactory<FlagEntity, FlagEntityFactory>().AsSingle();
         }
     }

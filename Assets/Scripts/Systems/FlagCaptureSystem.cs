@@ -29,6 +29,9 @@ namespace Systems
         {
             foreach (var player in _playerHandler.Players)
             {
+                if (!player.CanCaptureFlag)
+                    continue;
+                
                 CaptureFlags(player);
             }   
         }

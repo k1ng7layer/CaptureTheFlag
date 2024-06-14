@@ -18,18 +18,18 @@ namespace Systems
     {
         private readonly ISpawnService _spawnService;
         private readonly PrefabBase _prefabBase;
-        private readonly GameEntityFactory _gameEntityFactory;
+        private readonly PlayerEntityFactory _playerEntityFactory;
         private readonly PlayerHandler _playerHandler;
 
         public ClientInitializePlayerSystem(
             ISpawnService spawnService, 
             PrefabBase prefabBase,
-            GameEntityFactory gameEntityFactory,
+            PlayerEntityFactory playerEntityFactory,
             PlayerHandler playerHandler)
         {
             _spawnService = spawnService;
             _prefabBase = prefabBase;
-            _gameEntityFactory = gameEntityFactory;
+            _playerEntityFactory = playerEntityFactory;
             _playerHandler = playerHandler;
         }
         
@@ -60,7 +60,7 @@ namespace Systems
         private void OnLocalPlayerSpawned(IEntityView view)
         {
             view.ClientStarted -= OnLocalPlayerSpawned;
-            var entity = _gameEntityFactory.Create();
+            var entity = _playerEntityFactory.Create();
             entity.IsLocalPlayer = view.IsLocal;
             view.Initialize(entity);
            

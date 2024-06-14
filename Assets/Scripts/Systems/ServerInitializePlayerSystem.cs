@@ -21,20 +21,20 @@ namespace Systems
     {
         private readonly SpawnService _spawnService;
         private readonly PlayerHandler _playerHandler;
-        private readonly GameEntityFactory _gameEntityFactory;
+        private readonly PlayerEntityFactory _playerEntityFactory;
         private readonly IFlagSpawnService _flagSpawnService;
         private readonly Queue<EColor> _colors = new();
 
         public ServerInitializePlayerSystem(
             SpawnService spawnService, 
             PlayerHandler playerHandler,
-            GameEntityFactory gameEntityFactory,
+            PlayerEntityFactory playerEntityFactory,
             IFlagSpawnService flagSpawnService
         )
         {
             _spawnService = spawnService;
             _playerHandler = playerHandler;
-            _gameEntityFactory = gameEntityFactory;
+            _playerEntityFactory = playerEntityFactory;
             _flagSpawnService = flagSpawnService;
         }
         
@@ -56,7 +56,7 @@ namespace Systems
             var playerView = _spawnService.Spawn("Player", Vector3.zero, Quaternion.identity);
             NetworkServer.AddPlayerForConnection(conn, playerView.Transform.gameObject);
           
-            var playerEntity = _gameEntityFactory.Create();
+            var playerEntity = _playerEntityFactory.Create();
             playerEntity.IsLocalPlayer = playerView.IsLocal;
             
             playerView.Initialize(playerEntity);

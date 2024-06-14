@@ -6,12 +6,12 @@ namespace Services.Player
 {
     public class PlayerHandler
     {
-        private readonly List<GameEntity> _players = new();
+        private readonly List<PlayerEntity> _players = new();
         
         public GameEntity LocalPlayerEntityEntity { get; private set; }
-        public List<GameEntity> Players => _players;
+        public List<PlayerEntity> Players => _players;
 
-        public void AddPlayer(GameEntity player)
+        public void AddPlayer(PlayerEntity player)
         {
             if (player.IsLocalPlayer)
                 LocalPlayerEntityEntity = player;

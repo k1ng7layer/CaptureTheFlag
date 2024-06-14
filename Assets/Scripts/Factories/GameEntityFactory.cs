@@ -3,7 +3,7 @@ using Zenject;
 
 namespace Factories
 {
-    public class GameEntityFactory : PlaceholderFactory<GameEntity>
+    public class PlayerEntityFactory : PlaceholderFactory<PlayerEntity>
     {
         
     }
