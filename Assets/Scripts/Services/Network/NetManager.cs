@@ -13,7 +13,7 @@ namespace Services.Network
         {
             Debug.Log($"NetManager OnClientConnect");
             base.OnClientConnect();
-
+            //NetworkClient.Ready();
             NetworkClient.Send(new PlayerReadyMessage());
         }
 

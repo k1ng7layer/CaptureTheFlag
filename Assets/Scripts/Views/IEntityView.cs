@@ -13,6 +13,5 @@ namespace Views
         Transform Transform { get; }
         bool IsLocal { get; }
         void Initialize(GameEntity entity);
-        void SetColor(EColor color);
     }
 }

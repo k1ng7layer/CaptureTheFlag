@@ -62,7 +62,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: f9d64f41a8a2e47f88d40e60d817130a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -199,8 +199,8 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  _color: 0
   _meshRenderer: {fileID: 856929058163881765}
+  _meshFilter: {fileID: 0}
   playerColorSettings: {fileID: 11400000, guid: e7e3282dcc6e96a4ba908e5ae20fc989, type: 2}
   _radiusSprite: {fileID: 6956622612545745539}
 --- !u!1 &6265539142499785705

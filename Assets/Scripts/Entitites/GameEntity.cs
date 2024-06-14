@@ -10,10 +10,12 @@ namespace Entitites
         public event Action<Vector3> PositionChanged; 
         public event Action<Quaternion> RotationChanged; 
         public event Action<EColor> ColorChanged; 
+        public event Action LocalPlayerAdded; 
         public Vector3 Position { get; private set; }
         public Quaternion Rotation { get; private set; }
         public EColor Color { get; private set; }
         public bool IsLocalPlayer { get; set; }
+        public bool IsServerObject { get; set; }
 
         public void SetPosition(Vector3 position)
         {
@@ -33,5 +35,12 @@ namespace Entitites
             Color = color;
             ColorChanged?.Invoke(color);
         }
+
+        public void SetIsLocalPlayer(bool value)
+        {
+            IsLocalPlayer = value;
+            LocalPlayerAdded?.Invoke();
+        }
+        
     }
 }

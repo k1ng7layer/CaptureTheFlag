@@ -51,6 +51,7 @@ namespace Systems
             PlayerReadyMessage msg
         )
         {
+            conn.isReady = true;
             var color = _colors.Dequeue();
             var player = _playerSpawnService.SpawnPlayer(conn.connectionId, color);
 

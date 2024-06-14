@@ -47,7 +47,7 @@ namespace Systems
         {
             var view = _spawnService.Spawn("Player", Vector3.zero, Quaternion.identity);
             
-            view.ClientStarted += OnLocalPlayerSpawned;
+            view.LocalStarted += OnLocalPlayerSpawned;
             
             return view.Transform.gameObject;
         }
@@ -61,8 +61,9 @@ namespace Systems
         {
             view.ClientStarted -= OnLocalPlayerSpawned;
             var entity = _gameEntityFactory.Create();
-            view.Initialize(entity);
             entity.IsLocalPlayer = view.IsLocal;
+            view.Initialize(entity);
+           
             
             _playerHandler.AddPlayer(entity);
         }

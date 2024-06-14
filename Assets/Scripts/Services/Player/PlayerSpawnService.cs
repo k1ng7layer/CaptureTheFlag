@@ -1,9 +1,11 @@
+using System.Collections.Generic;
 using Entitites;
 using Factories;
 using Mirror;
 using Services.Spawn;
 using Settings;
 using UnityEngine;
+using Views;
 
 namespace Services.Player
 {
@@ -12,6 +14,7 @@ namespace Services.Player
         private readonly ISpawnService _spawnService;
         private readonly PlayerHandler _playerHandler;
         private readonly GameEntityFactory _gameEntityFactory;
+        private readonly Dictionary<int, GameEntity> _gameEntities = new();
 
         public PlayerSpawnService(
             ISpawnService spawnService, 
@@ -28,17 +31,19 @@ namespace Services.Player
         {
             var connection = NetworkServer.connections[connectionId];
             var playerView = _spawnService.Spawn("Player", Vector3.zero, Quaternion.identity);
-            NetworkServer.AddPlayerForConnection(connection, playerView.Transform.gameObject);
+         
+            
+            //NetworkServer.Spawn(playerView.Transform.gameObject, connection);
           
             var playerEntity = _gameEntityFactory.Create();
-            playerEntity.IsLocalPlayer = playerView.IsLocal;
-            
+
+            playerEntity.IsServerObject = true;
+            playerEntity.SetColor(color);
+            playerEntity.SetIsLocalPlayer(connectionId == NetworkClient.connection.connectionId);
             playerView.Initialize(playerEntity);
             
             _playerHandler.AddPlayer(playerEntity);
-            
-            playerEntity.SetColor(color);
-
+            NetworkServer.AddPlayerForConnection(connection, playerView.Transform.gameObject);
             return playerEntity;
         }
     }

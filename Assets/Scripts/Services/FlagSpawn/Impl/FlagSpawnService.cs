@@ -59,7 +59,7 @@ namespace Services.Flags.Impl
             
             flagEntity.SetColor(color);
             flagEntity.ChangeCaptureTimeLeft(_flagSettings.CaptureTime);
-            flagEntity.ChangeCaptureRadius(_flagSettings.CaptureRadius);
+            flagEntity.ChangeCaptureRadius(color == EColor.Blue ? 3 : _flagSettings.CaptureRadius);
             flagEntity.SetPosition(view.Transform.position);
             
             //_flagsEntities[color].Add(flagEntity);
