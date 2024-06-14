@@ -6,20 +6,20 @@ namespace Systems
     public class FlagCaptureTimeoutSystem : IUpdateSystem
     {
         private readonly ITimeProvider _timeProvider;
-        private readonly PlayerHandler _playerHandler;
+        private readonly PlayerRepository _playerRepository;
 
         public FlagCaptureTimeoutSystem(
             ITimeProvider timeProvider, 
-            PlayerHandler playerHandler
+            PlayerRepository playerRepository
         )
         {
             _timeProvider = timeProvider;
-            _playerHandler = playerHandler;
+            _playerRepository = playerRepository;
         }
         
         public void Update()
         {
-            foreach (var player in _playerHandler.Players)
+            foreach (var player in _playerRepository.Players)
             {
                 if (player.CanCaptureFlag)
                     continue;

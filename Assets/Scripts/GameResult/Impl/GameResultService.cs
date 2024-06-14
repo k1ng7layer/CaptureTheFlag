@@ -11,15 +11,15 @@ namespace GameResult.Impl
     public class GameResultService : IGameResultService, IInitializable
     {
         private readonly IFlagRepository _flagRepository;
-        private readonly PlayerHandler _playerHandler;
+        private readonly PlayerRepository _playerRepository;
 
         public GameResultService(
             IFlagRepository flagRepository, 
-            PlayerHandler playerHandler
+            PlayerRepository playerRepository
         )
         {
             _flagRepository = flagRepository;
-            _playerHandler = playerHandler;
+            _playerRepository = playerRepository;
         }
         
         public event Action<EColor> GameCompleted;

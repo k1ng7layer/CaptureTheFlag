@@ -11,23 +11,23 @@ namespace Systems
     public class FlagCaptureSystem : IUpdateSystem
     {
         private readonly ITimeProvider _timeProvider;
-        private readonly PlayerHandler _playerHandler;
+        private readonly PlayerRepository _playerRepository;
         private readonly IFlagRepository _flagRepository;
 
         public FlagCaptureSystem(
             ITimeProvider timeProvider, 
-            PlayerHandler playerHandler,
+            PlayerRepository playerRepository,
             IFlagRepository flagRepository
         )
         {
             _timeProvider = timeProvider;
-            _playerHandler = playerHandler;
+            _playerRepository = playerRepository;
             _flagRepository = flagRepository;
         }
         
         public void Update()
         {
-            foreach (var player in _playerHandler.Players)
+            foreach (var player in _playerRepository.Players)
             {
                 if (!player.CanCaptureFlag)
                     continue;
@@ -48,15 +48,15 @@ namespace Systems
                 
                 var dist2 = (flag.Position - player.Position).sqrMagnitude;
                 
-                Debug.Log($"Flag posit: {flag.Position}");
-                Debug.Log($"dist2 {dist2}, check: {flag.CaptureRadius * flag.CaptureRadius}, color: {flag.Color}, player pos: {player.Position}" );
+                // Debug.Log($"Flag posit: {flag.Position}");
+                // Debug.Log($"dist2 {dist2}, check: {flag.CaptureRadius * flag.CaptureRadius}, color: {flag.Color}, player pos: {player.Position}" );
                 
                 if (dist2 >= flag.CaptureRadius * flag.CaptureRadius)
                     continue;
 
                 var time = flag.CaptureTimeLeft - _timeProvider.DeltaTime;
                 
-                Debug.Log($"time FlagCaptureSystem: {time}");
+                //Debug.Log($"time FlagCaptureSystem: {time}");
                 
                 flag.ChangeCaptureTimeLeft(time);
                 

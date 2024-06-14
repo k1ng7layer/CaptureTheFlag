@@ -16,12 +16,12 @@ namespace Entitites
         public EColor Color { get; private set; }
         public bool IsLocalPlayer { get; set; }
         public bool IsServerObject { get; set; }
+        public int NetOwner { get; set; }
 
         public void SetPosition(Vector3 position)
         {
             Position = position;
             PositionChanged?.Invoke(position);
-            Debug.Log($"SetPosition: {position}");
         }
 
         public void SetRotation(Quaternion rotation)

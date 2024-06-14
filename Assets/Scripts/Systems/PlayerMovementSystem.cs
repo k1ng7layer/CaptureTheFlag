@@ -7,21 +7,21 @@ namespace Systems
 {
     public class PlayerMovementSystem : IUpdateSystem
     {
-        private readonly PlayerHandler _playerHandler;
+        private readonly PlayerRepository _playerRepository;
         private readonly IInputService _inputService;
 
         public PlayerMovementSystem(
-            PlayerHandler playerHandler, 
+            PlayerRepository playerRepository, 
             IInputService inputService
         )
         {
-            _playerHandler = playerHandler;
+            _playerRepository = playerRepository;
             _inputService = inputService;
         }
         
         public void Update()
         {
-            var player = _playerHandler.LocalPlayerEntityEntity;
+            var player = _playerRepository.LocalPlayerEntityEntity;
             
             if (_inputService.Input.sqrMagnitude <= 0 || player == null)
                 return;

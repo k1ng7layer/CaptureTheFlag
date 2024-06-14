@@ -17,10 +17,9 @@ namespace Views
         private Material _material;
         
         public event Action<IEntityView> ClientStarted;
-        public event Action<IEntityView> AuthorityStarted;
-        public event Action<IEntityView> LocalStarted;
+        public event Action<IEntityView> LocalPlayerStarted;
         public Transform Transform => transform;
-        public bool IsLocal => isLocalPlayer;
+        public bool IsLocalPlayer => isLocalPlayer;
         
         private void Awake()
         {
@@ -47,7 +46,7 @@ namespace Views
         
         public override void OnStartLocalPlayer()
         {
-            LocalStarted?.Invoke(this);
+            LocalPlayerStarted?.Invoke(this);
         }
 
         public virtual void Initialize(GameEntity entity)

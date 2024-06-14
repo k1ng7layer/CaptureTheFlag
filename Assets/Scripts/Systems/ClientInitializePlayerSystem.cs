@@ -19,18 +19,18 @@ namespace Systems
         private readonly ISpawnService _spawnService;
         private readonly PrefabBase _prefabBase;
         private readonly PlayerEntityFactory _playerEntityFactory;
-        private readonly PlayerHandler _playerHandler;
+        private readonly PlayerRepository _playerRepository;
 
         public ClientInitializePlayerSystem(
             ISpawnService spawnService, 
             PrefabBase prefabBase,
             PlayerEntityFactory playerEntityFactory,
-            PlayerHandler playerHandler)
+            PlayerRepository playerRepository)
         {
             _spawnService = spawnService;
             _prefabBase = prefabBase;
             _playerEntityFactory = playerEntityFactory;
-            _playerHandler = playerHandler;
+            _playerRepository = playerRepository;
         }
         
         public void Initialize()
@@ -47,7 +47,7 @@ namespace Systems
         {
             var view = _spawnService.Spawn("Player", Vector3.zero, Quaternion.identity);
             
-            view.LocalStarted += OnLocalPlayerSpawned;
+            view.LocalPlayerStarted += OnLocalPlayerSpawned;
             
             return view.Transform.gameObject;
         }
@@ -59,13 +59,14 @@ namespace Systems
         
         private void OnLocalPlayerSpawned(IEntityView view)
         {
-            view.ClientStarted -= OnLocalPlayerSpawned;
-            var entity = _playerEntityFactory.Create();
-            entity.IsLocalPlayer = view.IsLocal;
-            view.Initialize(entity);
-           
+            view.LocalPlayerStarted -= OnLocalPlayerSpawned;
             
-            _playerHandler.AddPlayer(entity);
+            var entity = _playerEntityFactory.Create();
+            entity.IsLocalPlayer = true;
+            view.Initialize(entity);
+
+            var networkIdentity = view.Transform.GetComponent<NetworkIdentity>();
+            _playerRepository.AddPlayer(networkIdentity.connectionToServer.connectionId, entity);
         }
     }
 }

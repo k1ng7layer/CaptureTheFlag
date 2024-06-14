@@ -12,18 +12,18 @@ namespace Services.Player
     public class PlayerSpawnService : IPlayerSpawnService
     {
         private readonly ISpawnService _spawnService;
-        private readonly PlayerHandler _playerHandler;
+        private readonly PlayerRepository _playerRepository;
         private readonly PlayerEntityFactory _playerEntityFactory;
         private readonly Dictionary<int, GameEntity> _gameEntities = new();
 
         public PlayerSpawnService(
             ISpawnService spawnService, 
-            PlayerHandler playerHandler,
+            PlayerRepository playerRepository,
             PlayerEntityFactory playerEntityFactory
         )
         {
             _spawnService = spawnService;
-            _playerHandler = playerHandler;
+            _playerRepository = playerRepository;
             _playerEntityFactory = playerEntityFactory;
         }
         
@@ -31,10 +31,6 @@ namespace Services.Player
         {
             var connection = NetworkServer.connections[connectionId];
             var playerView = _spawnService.Spawn("Player", Vector3.zero, Quaternion.identity);
-         
-            
-            //NetworkServer.Spawn(playerView.Transform.gameObject, connection);
-          
             var playerEntity = _playerEntityFactory.Create();
 
             playerEntity.IsServerObject = true;
@@ -43,8 +39,9 @@ namespace Services.Player
             playerEntity.ChangeCaptureAbility(true);
             playerView.Initialize(playerEntity);
             
-            _playerHandler.AddPlayer(playerEntity);
+            _playerRepository.AddPlayer(connectionId, playerEntity);
             NetworkServer.AddPlayerForConnection(connection, playerView.Transform.gameObject);
+            
             return playerEntity;
         }
     }

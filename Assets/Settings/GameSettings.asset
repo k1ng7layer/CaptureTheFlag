@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb7104dd68f645819385c8f8b6bbe31d, type: 3}
   m_Name: GameSettings
   m_EditorClassIdentifier: 
-  _flagsNumberPerPlayer: 0
+  _flagsNumberPerPlayer: 3

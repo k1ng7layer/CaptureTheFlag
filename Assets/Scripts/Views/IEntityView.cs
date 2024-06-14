@@ -8,10 +8,9 @@ namespace Views
     public interface IEntityView
     {
         event Action<IEntityView> ClientStarted;
-        event Action<IEntityView> AuthorityStarted;
-        event Action<IEntityView> LocalStarted;
+        event Action<IEntityView> LocalPlayerStarted;
         Transform Transform { get; }
-        bool IsLocal { get; }
+        bool IsLocalPlayer { get; }
         void Initialize(GameEntity entity);
     }
 }

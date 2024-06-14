@@ -3,12 +3,12 @@ using Entitites;
 using Factories;
 using GameResult.Impl;
 using Services.FlagRepository.Impl;
-using Services.Flags;
 using Services.Flags.Impl;
 using Services.Input.Impl;
 using Services.Map;
 using Services.MessageDispatcher;
 using Services.Player;
+using Services.QTE.Client.Impl;
 using Services.Spawn.Impl;
 using Services.Time.Impl;
 using Systems;
@@ -38,12 +38,13 @@ namespace Installers
             Container.BindInterfacesAndSelfTo<SpawnService>().AsSingle();
             Container.BindInterfacesAndSelfTo<MirrorMessageDispatcher>().AsSingle();
             Container.BindInterfacesAndSelfTo<InputService>().AsSingle();
-            Container.BindInterfacesAndSelfTo<PlayerHandler>().AsSingle();
+            Container.BindInterfacesAndSelfTo<PlayerRepository>().AsSingle();
             Container.BindInterfacesAndSelfTo<FlagSpawnService>().AsSingle();
             Container.BindInterfacesAndSelfTo<PlayerSpawnService>().AsSingle();
             Container.BindInterfacesAndSelfTo<UnityTimeProvider>().AsSingle();
             Container.BindInterfacesAndSelfTo<FlagRepository>().AsSingle();
             Container.BindInterfacesAndSelfTo<GameResultService>().AsSingle();
+            Container.BindInterfacesAndSelfTo<QteClientService>().AsSingle();
         }
 
         private void BindSystems()
