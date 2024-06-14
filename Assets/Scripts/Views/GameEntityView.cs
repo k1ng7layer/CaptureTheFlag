@@ -3,44 +3,46 @@ using Entitites;
 using Mirror;
 using Settings;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Views
 {
     public abstract class GameEntityView : NetworkBehaviour, IEntityView
     { 
-        [SerializeField] protected MeshRenderer _meshRenderer;
-        [SerializeField] protected MeshFilter _meshFilter;
-        [SerializeField] protected PlayerColorSettings playerColorSettings;
+        [SyncVar(hook = nameof(ColorHook))]
+        private int _var;
         
-        private GameEntity _entity;
+        [SerializeField] protected MeshRenderer _meshRenderer;
+        [SerializeField] protected PlayerColorSettings playerColorSettings;
+
+        private Material _material;
         
         public event Action<IEntityView> ClientStarted;
         public event Action<IEntityView> AuthorityStarted;
         public event Action<IEntityView> LocalStarted;
         public Transform Transform => transform;
         public bool IsLocal => isLocalPlayer;
-        protected Material _material;
         
         private void Awake()
         {
             _material = _meshRenderer.material;
             OnAwake();
         }
-
-        public override void OnStartClient()
-        {
-            ClientStarted?.Invoke(this);
-            
-            OnClientStart();
-        }
-
+        
         protected virtual void OnAwake()
         { }
 
-        protected virtual void OnClientStart()
+        private void ColorHook(int old, int newValue)
         {
-            
+            var color = playerColorSettings.Get((EColor)_var);
+            _material.color = color;
+            OnColorChanged((EColor)_var);
+        }
+        
+        public override void OnStartClient()
+        {
+            ClientStarted?.Invoke(this);
+            ColorHook(_var, _var);
+            OnClientStart();
         }
         
         public override void OnStartLocalPlayer()
@@ -50,8 +52,6 @@ namespace Views
 
         public virtual void Initialize(GameEntity entity)
         {
-            _entity = entity;
-             Debug.Log($"Initialize, isServer: {isServer}, local : {isClient}, isCLient {isClient}, isOwned {isOwned}, is {isClientOnly}");
             if (entity.IsLocalPlayer)
                 SetupAsClient(entity);
 
@@ -59,20 +59,20 @@ namespace Views
                 SetupAsServerObject(entity);
         }
         
-        protected virtual void SetupAsClient(GameEntity entity)
+        private void ColorChanged(EColor value)
         {
-            entity.PositionChanged += SetPosition;
-            entity.RotationChanged += SetRotation;
+            _var = (int)value;
+            ColorHook(_var, _var);
         }
         
-        protected virtual void SetupAsServerObject(GameEntity entity)
+        [Server]
+        private void SetColor(EColor color)
         {
-            
+            _var = (int)color;
         }
         
         private void SetPosition(Vector3 position)
         {
-            Debug.Log($"Set position");
             transform.position = position;
         }
 
@@ -83,5 +83,20 @@ namespace Views
 
         protected virtual void OnColorChanged(EColor value)
         { }
+        
+        protected virtual void OnClientStart()
+        { }
+        
+        protected virtual void SetupAsClient(GameEntity entity)
+        {
+            entity.PositionChanged += SetPosition;
+            entity.RotationChanged += SetRotation;
+        }
+        
+        protected virtual void SetupAsServerObject(GameEntity entity)
+        {
+            entity.ColorChanged += SetColor;
+            ColorChanged(entity.Color);
+        }
     }
 }

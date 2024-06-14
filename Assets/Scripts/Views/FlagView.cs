@@ -1,15 +1,13 @@
-﻿using System;
-using Entitites;
+﻿using Entitites;
 using Mirror;
 using Settings;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Views
 {
     public class FlagView : GameEntityView
     {
-        [SyncVar(hook = nameof(SetRadius))]
+        [SyncVar(hook = nameof(SetRadiusHook))]
         private float _radius;
         
         [SerializeField] private SpriteRenderer _radiusSprite;
@@ -26,13 +24,8 @@ namespace Views
             var flag = (FlagEntity)entity;
             flag.CaptureRadiusChanged += OnServerRadiusChange;
             flag.CaptureCompleted += Captured;
+            SetCaptureRadius(flag.CaptureRadius);
         }
-
-        // protected override void OnClientStart()
-        // {
-        //     base.OnClientStart();
-        //     SetRadius(_radius, _radius);
-        // }
 
         private void Captured()
         {
@@ -48,25 +41,25 @@ namespace Views
             _radiusMaterial.color = playerColorSettings.Get(value);
         }
 
-        public void SetCaptureRadius(float value)
+        private void SetCaptureRadius(float value)
         {
+            _radius = value;
             _radiusSprite.size = new Vector2(value, value);
         }
 
-        private void SetRadius(float old, float newValue)
+        private void SetRadiusHook(float old, float newValue)
         {
-            SetCaptureRadius(newValue);
+            SetCaptureRadius(_radius);
         }
 
         [Server]
         private void OnServerRadiusChange(float value)
         {
             _radius = value;
-            SetRadius(value, value);
         }
 
         [ClientRpc]
-        public void SetCaptured(bool value)
+        private void SetCaptured(bool value)
         {
             gameObject.SetActive(!value);
         }

@@ -7,7 +7,6 @@ using Services.Spawn;
 using Settings;
 using UnityEngine;
 using Views;
-using Zenject;
 
 namespace Services.Flags.Impl
 {
@@ -48,22 +47,22 @@ namespace Services.Flags.Impl
             position.z = Random.Range(floorMin.z, floorMax.z);
 
             var view = _spawnService.Spawn("Flag", position, Quaternion.identity);
-            NetworkServer.Spawn(view.Transform.gameObject);
+           
             //view.ClientStarted += OnFlagReady;
             _pendingFlags.Add(view.Transform.GetHashCode(), color);
 
             //OnFlagReady(view);
             
             var flagEntity = _flagEntityFactory.Create();
-            view.Initialize(flagEntity);
             
             flagEntity.SetColor(color);
             flagEntity.ChangeCaptureTimeLeft(_flagSettings.CaptureTime);
             flagEntity.ChangeCaptureRadius(color == EColor.Blue ? 3 : _flagSettings.CaptureRadius);
             flagEntity.SetPosition(view.Transform.position);
+            flagEntity.IsServerObject = true;
             
-            //_flagsEntities[color].Add(flagEntity);
-
+            view.Initialize(flagEntity);
+            NetworkServer.Spawn(view.Transform.gameObject);
             return flagEntity;
         }
 
