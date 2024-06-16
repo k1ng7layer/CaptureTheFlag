@@ -11,5 +11,6 @@ namespace Services.FlagRepository
         
         event Action<FlagEntity> Added;
         void Add(FlagEntity flagEntity);
+        void Remove(FlagEntity flagEntity);
     }
 }

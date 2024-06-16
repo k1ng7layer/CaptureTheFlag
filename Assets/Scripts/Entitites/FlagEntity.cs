@@ -15,7 +15,7 @@ namespace Entitites
         
         public event Action<float> CaptureRadiusChanged;
         public event Action<float> CaptureTimeLeftChanged;
-        public event Action CaptureCompleted;
+        public event Action<FlagEntity> CaptureCompleted;
 
         public void SetUnderCapture(bool value)
         {
@@ -37,7 +37,8 @@ namespace Entitites
         public void ChangeCaptured(bool value)
         {
             Captured = value;
-            CaptureCompleted?.Invoke();
+            CaptureCompleted?.Invoke(this);
         }
+        
     }
 }

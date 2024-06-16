@@ -98,7 +98,23 @@ namespace Views
         protected virtual void SetupAsServerObject(GameEntity entity)
         {
             entity.ColorChanged += SetColor;
+            entity.EntityDestroyed += Destroyed;
             ColorChanged(entity.Color);
         }
+        
+        private void Destroyed()
+        {
+            _entity.PositionChanged -= SetPosition;
+            _entity.RotationChanged -= SetRotation;
+            _entity.ColorChanged -= SetColor;
+            _entity.EntityDestroyed -= Destroyed;
+            
+            OnDestroyed();
+            
+            NetworkServer.Destroy(gameObject);
+        }
+
+        protected virtual void OnDestroyed()
+        { }
     }
 }

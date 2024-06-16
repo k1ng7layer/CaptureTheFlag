@@ -1,29 +1,24 @@
 using System;
 using Entitites;
-using GameState;
 using Mirror;
 using Services.FlagRepository;
 using Services.Network.Handlers;
-using Services.Player;
 using Settings;
 using Zenject;
 
 namespace GameResult.Server.Impl
 {
-    public class ServerGameResultService : IServerGameResultService, IInitializable, IDisposable
+    public class ServerGameResultService : IServerGameResultService, 
+        IInitializable, 
+        IDisposable
     {
         private readonly IFlagRepository _flagRepository;
-        private readonly PlayerRepository _playerRepository;
 
-        public ServerGameResultService(
-            IFlagRepository flagRepository, 
-            PlayerRepository playerRepository
-        )
+        public ServerGameResultService(IFlagRepository flagRepository)
         {
             _flagRepository = flagRepository;
-            _playerRepository = playerRepository;
         }
-        
+
         public event Action<EColor> GameCompleted;
         
         public void Initialize()
@@ -40,11 +35,11 @@ namespace GameResult.Server.Impl
         {
             flagEntity.CaptureCompleted += OnFlagCaptured;
             
-            void OnFlagCaptured()
+            void OnFlagCaptured(FlagEntity entity)
             {
-                flagEntity.CaptureCompleted -= OnFlagCaptured;
+                entity.CaptureCompleted -= OnFlagCaptured;
                 
-                CheckWin(flagEntity.Color);
+                CheckWin(entity.Color);
             }
         }
 

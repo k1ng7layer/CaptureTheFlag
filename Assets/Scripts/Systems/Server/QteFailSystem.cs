@@ -1,6 +1,7 @@
 ﻿using System;
 using Services.FlagRepository;
-using Services.Player;
+using Services.PlayerRepository;
+using Services.PlayerRepository.Impl;
 using Services.QTE.Server;
 using Settings;
 using UI.QteResult;
@@ -12,13 +13,13 @@ namespace Systems.Server
     {
         private readonly IQteServerService _qteServerService;
         private readonly IFlagRepository _flagRepository;
-        private readonly PlayerRepository _playerRepository;
+        private readonly IPlayerRepository _playerRepository;
         private readonly QteSettings _qteSettings;
 
         public QteFailSystem(
             IQteServerService qteServerService, 
             IFlagRepository flagRepository,
-            PlayerRepository playerRepository,
+            IPlayerRepository playerRepository,
             QteSettings qteSettings
         )
         {

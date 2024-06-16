@@ -1,7 +1,9 @@
 ﻿using System;
-using Services.Player;
+using Services.PlayerRepository;
+using Services.PlayerRepository.Impl;
 using Services.QTE.Client;
 using Settings;
+using UI.Manager;
 using Zenject;
 
 namespace UI.QteResult
@@ -11,21 +13,25 @@ namespace UI.QteResult
         IDisposable
     {
         private readonly IQteClientService _qteClientService;
-        private readonly PlayerRepository _playerRepository;
+        private readonly IPlayerRepository _playerRepository;
+        private readonly QteSettings _qteSettings;
 
         public QteResultController(
             IQteClientService qteClientService, 
-            PlayerRepository playerRepository
+            IPlayerRepository playerRepository,
+            QteSettings qteSettings
         )
         {
             _qteClientService = qteClientService;
             _playerRepository = playerRepository;
+            _qteSettings = qteSettings;
         }
 
         public void Initialize()
         {
             _qteClientService.QteFailed += HandleQteFail;
-            View.gameObject.SetActive(false);
+            View.Hide();
+            View.DisplayText("");
         }
         
         public void Dispose()
@@ -37,8 +43,9 @@ namespace UI.QteResult
         {
             if (_playerRepository.LocalPlayer.Color != loser)
             {
-                View.gameObject.SetActive(true);
-                View.DisplayResult($"Игрок из другой команды проиграл игру");
+                View.Show();
+                View.DisplayPopupResult($"Игрок из другой команды проиграл мини игру", 
+                    _qteSettings.TextPopupDuration);
             }
         }
     }

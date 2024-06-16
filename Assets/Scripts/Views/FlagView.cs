@@ -14,6 +14,8 @@ namespace Views
         
         [SerializeField] private SpriteRenderer _radiusSprite;
         private Material _radiusMaterial;
+
+        private FlagEntity _flagEntity;
         
         protected override void OnAwake()
         {
@@ -28,13 +30,21 @@ namespace Views
         protected override void SetupAsServerObject(GameEntity entity)
         {
             base.SetupAsServerObject(entity);
-            var flag = (FlagEntity)entity;
-            flag.CaptureRadiusChanged += OnServerRadiusChange;
-            flag.CaptureCompleted += Captured;
-            SetCaptureRadius(flag.CaptureRadius);
+            _flagEntity = (FlagEntity)entity;
+            _flagEntity.CaptureRadiusChanged += OnServerRadiusChange;
+            _flagEntity.CaptureCompleted += Captured;
+            SetCaptureRadius(_flagEntity.CaptureRadius);
         }
 
-        private void Captured()
+        protected override void OnDestroyed()
+        {
+            _flagEntity.CaptureRadiusChanged -= OnServerRadiusChange;
+            _flagEntity.CaptureCompleted -= Captured;
+            
+            NetworkServer.Destroy(gameObject);
+        }
+
+        private void Captured(FlagEntity entity)
         {
             gameObject.SetActive(false);
             

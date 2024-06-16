@@ -5,11 +5,12 @@ using GameResult.Client;
 using GameResult.Server.Impl;
 using Services.FlagRepository.Impl;
 using Services.FlagSpawn.Impl;
+using Services.GameState.Impl;
 using Services.Input.Impl;
 using Services.Map;
-using Services.MessageDispatcher;
 using Services.Network;
-using Services.Player;
+using Services.PlayerRepository;
+using Services.PlayerRepository.Impl;
 using Services.QTE.Client.Impl;
 using Services.QTE.Server;
 using Services.QTE.Server.Impl;
@@ -18,6 +19,10 @@ using Services.Time.Impl;
 using Systems;
 using Systems.Client;
 using Systems.Server;
+using UI;
+using UI.Manager;
+using UI.Signals;
+using UI.Windows;
 using UnityEngine;
 using Views;
 using Zenject;
@@ -31,19 +36,20 @@ namespace Installers
         
         public override void InstallBindings()
         {
-            var mapHolder = new MapSettings(_mapView);
             Container.BindInterfacesAndSelfTo<EntryPoint>().AsSingle();
-            Container.Bind<MapSettings>().FromInstance(mapHolder).AsSingle();
             
             BindServices();
             BindSystems();
             BindFactories();
+            BindWindows();
+            
+            var mapHolder = new LevelSettings(_mapView);
+            Container.Bind<LevelSettings>().FromInstance(mapHolder).AsSingle();
         }
 
         private void BindServices()
         {
             Container.BindInterfacesAndSelfTo<SpawnService>().AsSingle();
-            Container.BindInterfacesAndSelfTo<MirrorMessageDispatcher>().AsSingle();
             Container.BindInterfacesAndSelfTo<InputService>().AsSingle();
             Container.BindInterfacesAndSelfTo<PlayerRepository>().AsSingle();
             Container.BindInterfacesAndSelfTo<FlagSpawnService>().AsSingle();
@@ -53,26 +59,39 @@ namespace Installers
             Container.BindInterfacesAndSelfTo<ServerGameResultService>().AsSingle();
             Container.BindInterfacesAndSelfTo<QteClientService>().AsSingle();
             Container.BindInterfacesAndSelfTo<QteServerService>().AsSingle();
-            Container.BindInterfacesAndSelfTo<ClientServerGameResultService>().AsSingle();
+            Container.BindInterfacesAndSelfTo<ClientGameResultService>().AsSingle();
+            Container.BindInterfacesAndSelfTo<GameStateService>().AsSingle();
+            Container.BindInterfacesAndSelfTo<UiManager>().AsSingle();
             Container.BindInstance(_netManager);
         }
 
         private void BindSystems()
         {
-            Container.BindInterfacesAndSelfTo<ClientInitializePlayerSystem>().AsSingle();
+            Container.BindInterfacesAndSelfTo<ClientSpawnPlayerSystem>().AsSingle();
             Container.BindInterfacesAndSelfTo<PlayerMovementSystem>().AsSingle();
             Container.BindInterfacesAndSelfTo<FlagCaptureSystem>().AsSingle();
             Container.BindInterfacesAndSelfTo<GameInitializeSystem>().AsSingle();
             Container.BindInterfacesAndSelfTo<FlagCaptureTimeoutSystem>().AsSingle();
             Container.BindInterfacesAndSelfTo<StartQteSystem>().AsSingle();
             Container.BindInterfacesAndSelfTo<QteFailSystem>().AsSingle();
+            Container.BindInterfacesAndSelfTo<ClientGameStartSystem>().AsSingle();
         }
 
         private void BindFactories()
         {
             Container.BindFactory<PlayerEntity, PlayerEntityFactory>().AsSingle();
             Container.BindFactory<FlagEntity, FlagEntityFactory>().AsSingle();
-            Container.BindFactory<int, float, float, float, QteSession, QteSessionFactory>().AsSingle();
+        }
+
+        private void BindWindows()
+        {
+            SignalBusInstaller.Install(Container);
+            Container.DeclareSignal<SignalOpenWindow>();
+            
+            Container.BindInterfacesAndSelfTo<GameHudWindow>().AsSingle();
+            Container.BindInterfacesAndSelfTo<GameResultWindow>().AsSingle();
+            Container.BindInterfacesAndSelfTo<MainMenuWindow>().AsSingle();
+            Container.BindInterfacesAndSelfTo<GamePendingWindow>().AsSingle();
         }
     }
 }

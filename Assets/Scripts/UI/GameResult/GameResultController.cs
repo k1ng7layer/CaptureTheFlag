@@ -1,6 +1,7 @@
 ﻿using System;
 using GameResult.Client;
 using Settings;
+using UI.Manager;
 using Zenject;
 
 namespace UI.GameResult
@@ -31,7 +32,6 @@ namespace UI.GameResult
         private void OnGameCompleted(EColor winner)
         {
             View.ShowResult($"Победа игрока из команды {winner}");
-            View.Show();
         }
     }
 }

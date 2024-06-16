@@ -12,20 +12,20 @@ namespace Services.FlagSpawn.Impl
     public class FlagSpawnService : IFlagSpawnService
     {
         private readonly ISpawnService _spawnService;
-        private readonly MapSettings _mapSettings;
+        private readonly LevelSettings _levelSettings;
         private readonly FlagEntityFactory _flagEntityFactory;
         private readonly FlagSettings _flagSettings;
         private readonly Dictionary<EColor, List<FlagEntity>> _flagsEntities = new();
 
         public FlagSpawnService(
             ISpawnService spawnService, 
-            MapSettings mapSettings, 
+            LevelSettings levelSettings, 
             FlagEntityFactory gameEntityFactory,
             FlagSettings flagSettings
         )
         {
             _spawnService = spawnService;
-            _mapSettings = mapSettings;
+            _levelSettings = levelSettings;
             _flagEntityFactory = gameEntityFactory;
             _flagSettings = flagSettings;
         }
@@ -35,8 +35,8 @@ namespace Services.FlagSpawn.Impl
         public FlagEntity SpawnFlag(EColor color, int owner)
         {
             var position = Vector3.zero;
-            var floorMax = _mapSettings.Floor.GetComponent<MeshFilter>().mesh.bounds.max * 3f;
-            var floorMin = _mapSettings.Floor.GetComponent<MeshFilter>().mesh.bounds.min * 3f;
+            var floorMax = _levelSettings.Floor.GetComponent<MeshFilter>().mesh.bounds.max * 3f;
+            var floorMin = _levelSettings.Floor.GetComponent<MeshFilter>().mesh.bounds.min * 3f;
 
             position.x = Random.Range(floorMin.x, floorMax.x);
             position.z = Random.Range(floorMin.z, floorMax.z);
@@ -46,7 +46,7 @@ namespace Services.FlagSpawn.Impl
             
             flagEntity.SetColor(color);
             flagEntity.ChangeCaptureTimeLeft(_flagSettings.CaptureTime);
-            flagEntity.ChangeCaptureRadius(color == EColor.Blue ? 3 : _flagSettings.CaptureRadius);
+            flagEntity.ChangeCaptureRadius(_flagSettings.CaptureRadius);
             flagEntity.SetPosition(view.Transform.position);
             flagEntity.IsServerObject = true;
             

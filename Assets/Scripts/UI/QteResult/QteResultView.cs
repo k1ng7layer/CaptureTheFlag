@@ -1,4 +1,6 @@
-﻿using TMPro;
+﻿using System.Collections;
+using TMPro;
+using UI.Manager;
 using UnityEngine;
 
 namespace UI.QteResult
@@ -7,9 +9,32 @@ namespace UI.QteResult
     {
         [SerializeField] private TextMeshProUGUI _resultText;
 
-        public void DisplayResult(string result)
+        private Coroutine _runningCoroutine;
+
+        public void DisplayPopupResult(string result, float time)
         {
             _resultText.text = result;
+
+            if (_runningCoroutine != null)
+                StopCoroutine(_runningCoroutine);
+            
+            _runningCoroutine = StartCoroutine(ShowTextWithTime(time));
+        }
+
+        public void DisplayText(string text)
+        {
+            _resultText.text = text;
+        }
+
+        private IEnumerator ShowTextWithTime(float sec)
+        {
+            while (sec >= 0)
+            {
+                yield return null;
+                sec -= Time.deltaTime;
+            }
+
+            _resultText.text = "";
         }
     }
 }

@@ -24,7 +24,6 @@ namespace Entitites
             
             CapturingFlag = value;
             CapturingChanged?.Invoke(value, this);
-            Debug.Log($"ChangeCapturingFlag: {value}");
         }
 
         public void ChangeCaptureAbility(bool value)

@@ -12,6 +12,7 @@ namespace Installers.Settings
         [SerializeField] private FlagSettings _flagSettings;
         [SerializeField] private GameSettings _gameSettings;
         [SerializeField] private QteSettings _qteSettings;
+        [SerializeField] private PlayerSettings _playerSettings;
 
         public override void InstallBindings()
         {
@@ -20,6 +21,7 @@ namespace Installers.Settings
             Container.BindInstance(_flagSettings).AsSingle();
             Container.BindInstance(_gameSettings).AsSingle();
             Container.BindInstance(_qteSettings).AsSingle();
+            Container.BindInstance(_playerSettings).AsSingle();
         }
     }
 }

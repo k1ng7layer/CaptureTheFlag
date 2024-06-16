@@ -1,4 +1,4 @@
-namespace GameState
+namespace GameResult
 {
     public enum EGameState
     {

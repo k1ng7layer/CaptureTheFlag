@@ -1,6 +1,10 @@
 ﻿using System;
 using Mirror;
 using Services.Network;
+using UI.GamePending;
+using UI.Manager;
+using UI.Signals;
+using UI.Windows;
 using Zenject;
 
 namespace UI.MainMenu
@@ -10,10 +14,12 @@ namespace UI.MainMenu
         IDisposable
     {
         private readonly NetManager _netManager;
+        private readonly SignalBus _signalBus;
 
-        public MainMenuController(NetManager netManager)
+        public MainMenuController(NetManager netManager, SignalBus signalBus)
         {
             _netManager = netManager;
+            _signalBus = signalBus;
         }
         
         public void Initialize()
@@ -30,11 +36,14 @@ namespace UI.MainMenu
         private void HostGame()
         {
             NetworkManager.singleton.StartHost();
+            
+            _signalBus.OpenWindow<GamePendingWindow>();
         }
 
         private void JoinGame()
         {
             NetworkManager.singleton.StartClient();
+            _signalBus.OpenWindow<GamePendingWindow>();
         }
         
         private void OnConnectedToServer()

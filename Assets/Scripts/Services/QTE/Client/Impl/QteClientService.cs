@@ -2,7 +2,7 @@
 using GameResult.Client;
 using Mirror;
 using Services.Network.Handlers;
-using Services.Player;
+using Services.PlayerRepository;
 using Services.Time;
 using Settings;
 using UI.QteResult;
@@ -17,7 +17,7 @@ namespace Services.QTE.Client.Impl
     {
         private readonly ITimeProvider _timeProvider;
         private readonly QteSettings _qteSettings;
-        private readonly PlayerRepository _playerRepository;
+        private readonly IPlayerRepository _playerRepository;
         private readonly IClientGameResultService _gameResultService;
         private bool _inProcess;
         private int _multiplier;
@@ -26,7 +26,7 @@ namespace Services.QTE.Client.Impl
         public QteClientService(
             ITimeProvider timeProvider, 
             QteSettings qteSettings,
-            PlayerRepository playerRepository,
+            IPlayerRepository playerRepository,
             IClientGameResultService gameResultService
         )
         {

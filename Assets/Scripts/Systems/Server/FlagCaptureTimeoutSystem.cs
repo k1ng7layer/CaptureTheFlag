@@ -1,4 +1,5 @@
-using Services.Player;
+using Services.PlayerRepository;
+using Services.PlayerRepository.Impl;
 using Services.Time;
 
 namespace Systems.Server
@@ -6,11 +7,11 @@ namespace Systems.Server
     public class FlagCaptureTimeoutSystem : IUpdateSystem
     {
         private readonly ITimeProvider _timeProvider;
-        private readonly PlayerRepository _playerRepository;
+        private readonly IPlayerRepository _playerRepository;
 
         public FlagCaptureTimeoutSystem(
             ITimeProvider timeProvider, 
-            PlayerRepository playerRepository
+            IPlayerRepository playerRepository
         )
         {
             _timeProvider = timeProvider;

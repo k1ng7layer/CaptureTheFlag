@@ -1,5 +1,6 @@
 ﻿using System;
 using TMPro;
+using UI.Manager;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -10,7 +11,6 @@ namespace UI.MainMenu
     {
         [SerializeField] private Button _hostButton;
         [SerializeField] private Button _joinButton;
-        [SerializeField] private TextMeshProUGUI _joinInfo;
 
         private Action _onHost;
         private Action _onJoin;

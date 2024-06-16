@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using GameResult.Server;
-using GameState;
 using Mirror;
 using Services.Network.Handlers;
-using Services.Player;
+using Services.PlayerRepository;
 using Services.Time;
 using Settings;
 using UI.QteResult;
@@ -20,7 +19,7 @@ namespace Services.QTE.Server.Impl
     {
         private readonly QteSettings _qteSettings;
         private readonly ITimeProvider _timeProvider;
-        private readonly PlayerRepository _playerRepository;
+        private readonly IPlayerRepository _playerRepository;
         private readonly IServerGameResultService _serverGameResultService;
         private readonly Dictionary<int, QteSession> _activeQteSessions = new();
         private readonly List<QteSession> _inactive = new();
@@ -28,7 +27,7 @@ namespace Services.QTE.Server.Impl
         public QteServerService(
             QteSettings qteSettings,
             ITimeProvider timeProvider,
-            PlayerRepository playerRepository,
+            IPlayerRepository playerRepository,
             IServerGameResultService serverGameResultService
         )
         {
@@ -57,7 +56,6 @@ namespace Services.QTE.Server.Impl
             if (!NetworkServer.connections.TryGetValue(connectionId, out var conn))
                 return;
             
-            Debug.Log($"StartQteSession connId :{connectionId}");
             var zoneWidth = UnityEngine.Random.Range(_qteSettings.MinSuccessZoneNormalizedWidth, 
                 _qteSettings.MaxSuccessZoneNormalizedWidth);
 
@@ -78,7 +76,6 @@ namespace Services.QTE.Server.Impl
 
         public void StopQteSession(int connectionId, EQteResult result = EQteResult.None)
         {
-            Debug.Log($"StopQteSession, connid: {connectionId}");
             if (!_activeQteSessions.ContainsKey(connectionId))
                 return;
 

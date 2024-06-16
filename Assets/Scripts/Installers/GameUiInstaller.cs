@@ -1,4 +1,5 @@
-﻿using UI.GameResult;
+﻿using UI.GamePending;
+using UI.GameResult;
 using UI.Input;
 using UI.MainMenu;
 using UI.QTE;
@@ -15,6 +16,7 @@ namespace Installers
         [SerializeField] private QteResultView _qteResultView;
         [SerializeField] private MainMenuView _mainMenuView;
         [SerializeField] private GameResultView _gameResultView;
+        [SerializeField] private GamePendingView _gamePendingView;
         
         public override void InstallBindings()
         {
@@ -29,6 +31,7 @@ namespace Installers
             Container.BindInterfacesAndSelfTo<QteResultView>().FromInstance(_qteResultView).AsSingle();
             Container.BindInterfacesAndSelfTo<MainMenuView>().FromInstance(_mainMenuView).AsSingle();
             Container.BindInterfacesAndSelfTo<GameResultView>().FromInstance(_gameResultView).AsSingle();
+            Container.BindInterfacesAndSelfTo<GamePendingView>().FromInstance(_gamePendingView).AsSingle();
         }
 
         private void BindControllers()
@@ -38,6 +41,7 @@ namespace Installers
             Container.BindInterfacesAndSelfTo<QteResultController>().AsSingle();
             Container.BindInterfacesAndSelfTo<MainMenuController>().AsSingle();
             Container.BindInterfacesAndSelfTo<GameResultController>().AsSingle();
+            Container.BindInterfacesAndSelfTo<GamePendingController>().AsSingle();
         }
     }
 }

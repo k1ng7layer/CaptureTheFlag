@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Entitites;
-using Services.Player;
+using Services.PlayerRepository;
+using Services.PlayerRepository.Impl;
 using Services.QTE.Server;
 using Services.Time;
 using Settings;
@@ -14,7 +15,7 @@ namespace Systems.Server
     {
         private readonly IQteServerService _qteServerService;
         private readonly ITimeProvider _timeProvider;
-        private readonly PlayerRepository _playerRepository;
+        private readonly IPlayerRepository _playerRepository;
         private readonly QteSettings _qteSettings;
         private readonly FlagSettings _flagSettings;
         private readonly Dictionary<int, QteDelayedStart> _pendingQte = new();
@@ -23,7 +24,7 @@ namespace Systems.Server
         public StartQteSystem(
             IQteServerService qteServerService,
             ITimeProvider timeProvider,
-            PlayerRepository playerRepository,
+            IPlayerRepository playerRepository,
             QteSettings qteSettings,
             FlagSettings flagSettings)
         {
@@ -58,18 +59,31 @@ namespace Systems.Server
                 _pendingQte.Remove(player.OwnerId);
                 return;
             }
-            
-            var chance = Random.Range(0f, 1f);
-            var startTime = Random.Range(0f, _flagSettings.CaptureTime - _qteSettings.Duration);
-            
-            // if (chance >= 0.5f)
-            //     return;
 
-            var delayedStart = new QteDelayedStart(player.OwnerId, 1f);
+            var willBeQte = CalculateQteProbability();
+            
+            if (!willBeQte)
+                return;
+            
+            var startTime = Random.Range(0f, _flagSettings.CaptureTime - _qteSettings.Duration);
+            var delayedStart = new QteDelayedStart(player.OwnerId, startTime);
 
             delayedStart.Elapsed += BeginQte;
             
             _pendingQte.Add(player.OwnerId, delayedStart);
+        }
+
+        private bool CalculateQteProbability()
+        {
+            if (_qteSettings.QteChance >= 1)
+                return true;
+            
+            var chance = Random.Range(0f, 1f);
+            
+            if (chance < _qteSettings.QteChance)
+                return true;
+
+            return false;
         }
 
         private void BeginQte(QteDelayedStart qteDelayedStart)

@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84725a671f2344128de8994e57249562, type: 3}
   m_Name: FlagSettings
   m_EditorClassIdentifier: 
-  _captureRadius: 9
-  _captureTime: 20
+  _captureRadius: 3
+  _captureTime: 10

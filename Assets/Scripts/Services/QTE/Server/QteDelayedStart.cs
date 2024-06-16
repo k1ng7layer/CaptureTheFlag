@@ -6,6 +6,7 @@ namespace Services.QTE.Server
     {
         public readonly int ConnectionId;
         private float _time;
+        private bool _completed;
 
         public QteDelayedStart(int connectionId, float time)
         {
@@ -17,13 +18,17 @@ namespace Services.QTE.Server
 
         public void Tick(float deltaTime)
         {
-            if (_time <= 0)
+            if (_completed)
                 return;
+
+            if (_time <= 0)
+            {
+                Elapsed?.Invoke(this);
+                _completed = true;
+            }
+               
             
             _time -= deltaTime;
-            
-            if (_time <= 0)
-                Elapsed?.Invoke(this);
         }
     }
 }

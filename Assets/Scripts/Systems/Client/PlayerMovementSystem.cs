@@ -1,5 +1,8 @@
-﻿using Services.Input;
-using Services.Player;
+﻿using GameResult;
+using Services.GameState;
+using Services.Input;
+using Services.PlayerRepository;
+using Services.PlayerRepository.Impl;
 using Services.Time;
 using Settings;
 using UnityEngine;
@@ -8,26 +11,32 @@ namespace Systems.Client
 {
     public class PlayerMovementSystem : IUpdateSystem
     {
-        private readonly PlayerRepository _playerRepository;
+        private readonly IPlayerRepository _playerRepository;
         private readonly IInputService _inputService;
-        private readonly PlayerSettings _playerSettings;
         private readonly ITimeProvider _timeProvider;
+        private readonly IGameStateService _gameStateService;
+        private readonly PlayerSettings _playerSettings;
 
         public PlayerMovementSystem(
-            PlayerRepository playerRepository, 
+            IPlayerRepository playerRepository, 
             IInputService inputService,
-            PlayerSettings playerSettings,
-            ITimeProvider timeProvider
+            ITimeProvider timeProvider,
+            IGameStateService gameStateService,
+            PlayerSettings playerSettings
         )
         {
             _playerRepository = playerRepository;
             _inputService = inputService;
-            _playerSettings = playerSettings;
             _timeProvider = timeProvider;
+            _gameStateService = gameStateService;
+            _playerSettings = playerSettings;
         }
         
         public void Update()
         {
+            if (_gameStateService.CurrentState != EGameState.Running)
+                return;
+            
             var player = _playerRepository.LocalPlayer;
             
             if (_inputService.Input.sqrMagnitude <= 0 || player == null)

@@ -12,8 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2034d00d44c742668c66c877041c55a7, type: 3}
   m_Name: QteSettings
   m_EditorClassIdentifier: 
+  _qteChance: 1
   _minSuccessZoneNormalizedWidth: 0.2
   _maxSuccessZoneNormalizedWidth: 0.4
   _sliderSpeed: 1
   _flagCaptureTimeout: 2
-  _duration: 10
+  _duration: 1.5
+  _textPopupDuration: 2

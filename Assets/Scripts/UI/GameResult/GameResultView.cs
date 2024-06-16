@@ -1,4 +1,5 @@
 ﻿using TMPro;
+using UI.Manager;
 using UnityEngine;
 
 namespace UI.GameResult

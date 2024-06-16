@@ -1,6 +1,7 @@
 ﻿using Entitites;
 using Services.FlagRepository;
-using Services.Player;
+using Services.PlayerRepository;
+using Services.PlayerRepository.Impl;
 using Services.QTE.Server;
 using Services.QTE.Server.Impl;
 using Services.Time;
@@ -13,24 +14,24 @@ namespace Systems.Server
     public class FlagCaptureSystem : IUpdateSystem
     {
         private readonly ITimeProvider _timeProvider;
-        private readonly PlayerRepository _playerRepository;
+        private readonly IPlayerRepository _playerRepository;
         private readonly IFlagRepository _flagRepository;
-        private readonly FlagSettings _flagSettings;
         private readonly IQteServerService _qteServerService;
+        private readonly FlagSettings _flagSettings;
 
         public FlagCaptureSystem(
             ITimeProvider timeProvider, 
-            PlayerRepository playerRepository,
+            IPlayerRepository playerRepository,
             IFlagRepository flagRepository,
-            FlagSettings flagSettings,
-            IQteServerService qteServerService
+            IQteServerService qteServerService,
+            FlagSettings flagSettings
         )
         {
             _timeProvider = timeProvider;
             _playerRepository = playerRepository;
             _flagRepository = flagRepository;
-            _flagSettings = flagSettings;
             _qteServerService = qteServerService;
+            _flagSettings = flagSettings;
         }
         
         public void Update()

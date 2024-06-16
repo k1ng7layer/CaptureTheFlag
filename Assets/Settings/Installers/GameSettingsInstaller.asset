@@ -17,3 +17,4 @@ MonoBehaviour:
   _flagSettings: {fileID: 11400000, guid: 33b1cd6fc15e81b45a8b069180155f6c, type: 2}
   _gameSettings: {fileID: 11400000, guid: 6ea0d92b873824a09950bad0907f7c13, type: 2}
   _qteSettings: {fileID: 11400000, guid: 1bb50653efd45034887362d620eaf782, type: 2}
+  _playerSettings: {fileID: 11400000, guid: 03f436f7721b10046a060521f4442f80, type: 2}
