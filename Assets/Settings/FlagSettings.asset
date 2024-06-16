@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: FlagSettings
   m_EditorClassIdentifier: 
   _captureRadius: 9
-  _captureTime: 3
+  _captureTime: 20

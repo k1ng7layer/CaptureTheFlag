@@ -11,11 +11,17 @@ namespace Entitites
         public float CaptureRadius { get; private set; }
         public float CaptureTimeLeft { get; private set; }
         public bool Captured { get; private set; }
+        public bool UnderCapture { get;private set; }
         
         public event Action<float> CaptureRadiusChanged;
         public event Action<float> CaptureTimeLeftChanged;
         public event Action CaptureCompleted;
 
+        public void SetUnderCapture(bool value)
+        {
+            UnderCapture = value;
+        }
+        
         public void ChangeCaptureRadius(float value)
         {
             CaptureRadius = value;

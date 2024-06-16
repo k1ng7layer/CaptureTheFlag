@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2034d00d44c742668c66c877041c55a7, type: 3}
+  m_Name: QteSettings
+  m_EditorClassIdentifier: 
+  _minSuccessZoneNormalizedWidth: 0.2
+  _maxSuccessZoneNormalizedWidth: 0.4
+  _sliderSpeed: 1
+  _flagCaptureTimeout: 2
+  _duration: 10

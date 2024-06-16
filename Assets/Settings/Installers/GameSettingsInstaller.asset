@@ -16,3 +16,4 @@ MonoBehaviour:
   _playerColorSettings: {fileID: 11400000, guid: e7e3282dcc6e96a4ba908e5ae20fc989, type: 2}
   _flagSettings: {fileID: 11400000, guid: 33b1cd6fc15e81b45a8b069180155f6c, type: 2}
   _gameSettings: {fileID: 11400000, guid: 6ea0d92b873824a09950bad0907f7c13, type: 2}
+  _qteSettings: {fileID: 11400000, guid: 1bb50653efd45034887362d620eaf782, type: 2}

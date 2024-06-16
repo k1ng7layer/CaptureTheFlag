@@ -2,11 +2,11 @@
 using Entitites;
 using Settings;
 
-namespace Services.Flags
+namespace Services.FlagSpawn
 {
     public interface IFlagSpawnService
     {
         IReadOnlyDictionary<EColor, List<FlagEntity>> Flags { get; }
-        FlagEntity SpawnFlag(EColor color);
+        FlagEntity SpawnFlag(EColor color, int owner);
     }
 }

@@ -9,17 +9,20 @@ namespace Services.Player
         private readonly List<PlayerEntity> _players = new();
         private readonly Dictionary<int, PlayerEntity> _playerEntities = new();
         
-        public GameEntity LocalPlayerEntityEntity { get; private set; }
+        public GameEntity LocalPlayer { get; private set; }
         public List<PlayerEntity> Players => _players;
         public IReadOnlyDictionary<int, PlayerEntity> PlayerEntities => _playerEntities;
+        public event Action<PlayerEntity> Added;
+        public event Action<PlayerEntity> Removed;
 
         public void AddPlayer(int connectionId, PlayerEntity player)
         {
             if (player.IsLocalPlayer)
-                LocalPlayerEntityEntity = player;
+                LocalPlayer = player;
             
             _players.Add(player);
             _playerEntities.Add(connectionId, player);
+            Added?.Invoke(player);
         }
 
         public void Remove(int connectionId)

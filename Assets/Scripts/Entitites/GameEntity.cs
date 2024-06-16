@@ -16,8 +16,8 @@ namespace Entitites
         public EColor Color { get; private set; }
         public bool IsLocalPlayer { get; set; }
         public bool IsServerObject { get; set; }
-        public int NetOwner { get; set; }
-
+        public int OwnerId { get; set; }
+        
         public void SetPosition(Vector3 position)
         {
             Position = position;

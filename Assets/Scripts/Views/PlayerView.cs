@@ -1,4 +1,5 @@
 ﻿using Entitites;
+using Settings;
 
 namespace Views
 {
@@ -11,6 +12,13 @@ namespace Views
             base.Initialize(entity);
             
             _entity = entity;
+        }
+
+        protected override void SetupAsClient(GameEntity entity)
+        {
+            base.SetupAsClient(entity);
+            
+            entity.SetColor((EColor)Color);
         }
 
         private void Update()

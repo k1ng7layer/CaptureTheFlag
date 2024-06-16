@@ -1,47 +1,44 @@
 ﻿using System;
 using Services.Time;
-using Settings;
 
 namespace Services.QTE.Server
 {
     public class QteSession
     {
-        private readonly ITimeProvider _timeProvider;
+        private float _duration;
         private bool _running;
 
         public QteSession(
-            EColor playerColor, 
+            int connId, 
             float zoneStart, 
-            float zoneWidth, 
-            ITimeProvider timeProvider
-        )
+            float zoneWidth,
+            float duration)
         {
-            _timeProvider = timeProvider;
-            PlayerColor = playerColor;
+            _duration = duration;
+            ConnId = connId;
             ZoneStart = zoneStart;
             ZoneWidth = zoneWidth;
         }
-        
-        public EColor PlayerColor { get; }
+
+        public int ConnId { get; }
         public float ZoneStart { get; }
         public float ZoneWidth { get; }
-        public float Duration { get; set; }
 
-        public event Action<QteSession> Completed;
+        public event Action<QteSession> Timeout;
 
         public void Start()
         {
             _running = true;
         }
 
-        public void Update()
+        public void Update(float time)
         {
             if (!_running)
                 return;
 
-            Duration -= _timeProvider.DeltaTime;
+            _duration -= time;
 
-            if (Duration <= 0)
+            if (_duration <= 0)
                 Complete();
         }
 
@@ -49,7 +46,7 @@ namespace Services.QTE.Server
         {
             _running = false;
             
-            Completed?.Invoke(this);
+            Timeout?.Invoke(this);
         }
     }
 }

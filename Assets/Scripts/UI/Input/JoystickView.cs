@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace UI.Input
 {
-    public class JoystickView : MonoBehaviour
+    public class JoystickView : UiView
     {
         [SerializeField] private Joystick _joystick;
 

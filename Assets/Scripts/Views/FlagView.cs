@@ -1,6 +1,8 @@
-﻿using Entitites;
+﻿using System;
+using Entitites;
 using Mirror;
 using Settings;
+using UnityEditor;
 using UnityEngine;
 
 namespace Views
@@ -16,6 +18,11 @@ namespace Views
         protected override void OnAwake()
         {
             _radiusMaterial = _radiusSprite.material;
+        }
+
+        protected override void OnClientStart()
+        {
+            _radiusSprite.gameObject.SetActive(isOwned);
         }
 
         protected override void SetupAsServerObject(GameEntity entity)
@@ -44,7 +51,7 @@ namespace Views
         private void SetCaptureRadius(float value)
         {
             _radius = value;
-            _radiusSprite.size = new Vector2(value, value);
+            _radiusSprite.size = new Vector2(value * 2, value * 2);
         }
 
         private void SetRadiusHook(float old, float newValue)

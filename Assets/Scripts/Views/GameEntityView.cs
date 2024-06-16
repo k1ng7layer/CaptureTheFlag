@@ -9,12 +9,13 @@ namespace Views
     public abstract class GameEntityView : NetworkBehaviour, IEntityView
     { 
         [SyncVar(hook = nameof(ColorHook))]
-        private int _var;
+        protected int Color;
         
         [SerializeField] protected MeshRenderer _meshRenderer;
         [SerializeField] protected PlayerColorSettings playerColorSettings;
 
         private Material _material;
+        private GameEntity _entity;
         
         public event Action<IEntityView> ClientStarted;
         public event Action<IEntityView> LocalPlayerStarted;
@@ -32,15 +33,15 @@ namespace Views
 
         private void ColorHook(int old, int newValue)
         {
-            var color = playerColorSettings.Get((EColor)_var);
+            var color = playerColorSettings.Get((EColor)Color);
             _material.color = color;
-            OnColorChanged((EColor)_var);
+            OnColorChanged((EColor)Color);
         }
         
         public override void OnStartClient()
         {
             ClientStarted?.Invoke(this);
-            ColorHook(_var, _var);
+            ColorHook(Color, Color);
             OnClientStart();
         }
         
@@ -51,6 +52,8 @@ namespace Views
 
         public virtual void Initialize(GameEntity entity)
         {
+            _entity = entity;
+            
             if (entity.IsLocalPlayer)
                 SetupAsClient(entity);
 
@@ -60,14 +63,14 @@ namespace Views
         
         private void ColorChanged(EColor value)
         {
-            _var = (int)value;
-            ColorHook(_var, _var);
+            Color = (int)value;
+            ColorHook(Color, Color);
         }
         
         [Server]
         private void SetColor(EColor color)
         {
-            _var = (int)color;
+            Color = (int)color;
         }
         
         private void SetPosition(Vector3 position)

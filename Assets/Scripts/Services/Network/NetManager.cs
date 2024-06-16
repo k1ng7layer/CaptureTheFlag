@@ -7,19 +7,14 @@ namespace Services.Network
 {
     public class NetManager : NetworkManager
     {
-        public event Action ClientConnected;
+        public event Action ClientConnectedToServer;
         
         public override void OnClientConnect()
         {
-            Debug.Log($"NetManager OnClientConnect");
             base.OnClientConnect();
-            //NetworkClient.Ready();
+       
+            ClientConnectedToServer?.Invoke();
             NetworkClient.Send(new PlayerReadyMessage());
-        }
-
-        public override void OnServerAddPlayer(NetworkConnectionToClient conn)
-        {
-            base.OnServerAddPlayer(conn);
         }
     }
 }

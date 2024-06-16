@@ -37,6 +37,7 @@ namespace Services.Player
             playerEntity.SetColor(color);
             playerEntity.SetIsLocalPlayer(connectionId == NetworkClient.connection.connectionId);
             playerEntity.ChangeCaptureAbility(true);
+            playerEntity.OwnerId = connectionId;
             playerView.Initialize(playerEntity);
             
             _playerRepository.AddPlayer(connectionId, playerEntity);

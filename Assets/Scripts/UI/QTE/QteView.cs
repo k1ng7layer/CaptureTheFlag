@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace UI.QTE
 {
-    public class QteView : MonoBehaviour, IPointerClickHandler
+    public class QteView : UiView, IPointerClickHandler
     {
         [SerializeField] private RectTransform backGround;
         [SerializeField] private Image successZone;

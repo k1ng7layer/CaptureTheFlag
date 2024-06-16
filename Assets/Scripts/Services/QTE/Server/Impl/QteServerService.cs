@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using GameResult.Server;
+using GameState;
 using Mirror;
 using Services.Network.Handlers;
 using Services.Player;
-using Services.QTE.Client;
 using Services.Time;
 using Settings;
+using UI.QteResult;
+using UnityEngine;
 using Zenject;
 
 namespace Services.QTE.Server.Impl
@@ -16,39 +19,49 @@ namespace Services.QTE.Server.Impl
         ITickable
     {
         private readonly QteSettings _qteSettings;
-        private readonly PlayerRepository _playerRepository;
         private readonly ITimeProvider _timeProvider;
+        private readonly PlayerRepository _playerRepository;
+        private readonly IServerGameResultService _serverGameResultService;
         private readonly Dictionary<int, QteSession> _activeQteSessions = new();
+        private readonly List<QteSession> _inactive = new();
 
         public QteServerService(
-            QteSettings qteSettings, 
-            PlayerRepository playerRepository, 
-            ITimeProvider timeProvider
+            QteSettings qteSettings,
+            ITimeProvider timeProvider,
+            PlayerRepository playerRepository,
+            IServerGameResultService serverGameResultService
         )
         {
             _qteSettings = qteSettings;
-            _playerRepository = playerRepository;
             _timeProvider = timeProvider;
+            _playerRepository = playerRepository;
+            _serverGameResultService = serverGameResultService;
         }
+        
+        public event Action<ServerQteResultArgs> QteCompleted;
         
         public void Initialize()
         {
             NetworkServer.RegisterHandler<QteResolveMessage>(OnQteResolve);
+            _serverGameResultService.GameCompleted += StopAllQte;
         }
         
         public void Dispose()
         {
             NetworkServer.UnregisterHandler<QteResolveMessage>();
+            _serverGameResultService.GameCompleted -= StopAllQte;
         }
 
         public void StartQteSession(int connectionId)
         {
+            if (!NetworkServer.connections.TryGetValue(connectionId, out var conn))
+                return;
+            
+            Debug.Log($"StartQteSession connId :{connectionId}");
             var zoneWidth = UnityEngine.Random.Range(_qteSettings.MinSuccessZoneNormalizedWidth, 
                 _qteSettings.MaxSuccessZoneNormalizedWidth);
 
             var zoneStart = UnityEngine.Random.Range(0f, 1f - zoneWidth);
-            
-            var conn = NetworkServer.connections[connectionId];
             
             conn.Send(new StartQteMessage
             {
@@ -56,10 +69,31 @@ namespace Services.QTE.Server.Impl
                 ZoneWidth = zoneWidth
             });
 
-            var player = _playerRepository.PlayerEntities[connectionId];
-            var session = new QteSession(player.Color, zoneStart, zoneWidth);
-            session.Completed += 
-            _activeQteSessions.Add(connectionId, );
+            var session = new QteSession(connectionId, zoneStart, zoneWidth, _qteSettings.Duration);
+            session.Timeout += OnSessionTimeout;
+            session.Start();
+            
+            _activeQteSessions.Add(connectionId, session);
+        }
+
+        public void StopQteSession(int connectionId, EQteResult result = EQteResult.None)
+        {
+            Debug.Log($"StopQteSession, connid: {connectionId}");
+            if (!_activeQteSessions.ContainsKey(connectionId))
+                return;
+
+            var session = _activeQteSessions[connectionId];
+
+            Fail(session.ConnId);
+            
+            _activeQteSessions.Remove(connectionId);
+            _inactive.Remove(session);
+        }
+
+        private void StopAllQte(EColor _)
+        {
+            _activeQteSessions.Clear();
+            _inactive.Clear();
         }
         
         private void OnQteResolve(
@@ -67,11 +101,15 @@ namespace Services.QTE.Server.Impl
             QteResolveMessage msg
         )
         {
-            var qteParams = _activeQteSessions[conn.connectionId];
-
-            if (IsSuccess(msg.Value, qteParams.ZoneStart, qteParams.ZoneWidth))
-                Success(conn);
-            else Fail(conn);
+            if (!_activeQteSessions.ContainsKey(conn.connectionId))
+                return;
+            
+            var qteSession = _activeQteSessions[conn.connectionId];
+            _activeQteSessions.Remove(conn.connectionId);
+            
+            if (IsSuccess(msg.Value, qteSession.ZoneStart, qteSession.ZoneWidth))
+                Success(qteSession.ConnId);
+            else Fail(qteSession.ConnId);
         }
 
         private bool IsSuccess(
@@ -83,27 +121,46 @@ namespace Services.QTE.Server.Impl
             return (selectedValue >= start && selectedValue <= start + width);
         }
 
-        private void Success(NetworkConnectionToClient conn)
+        private void Success(int connectionId)
         {
-            NetworkServer.SendToAll(new QteFailMessage());
+            QteCompleted?.Invoke(new ServerQteResultArgs(connectionId, EQteResult.Success));
         }
         
-        private void Fail(NetworkConnectionToClient conn)
+        private void Fail(int connectionId)
         {
+            var player = _playerRepository.PlayerEntities[connectionId];
             
+            NetworkServer.SendToAll(new QteResultMessage
+            {
+                FailedTeam = player.Color,
+                Result = EQteResult.Fail
+            });
+            
+            QteCompleted?.Invoke(new ServerQteResultArgs(connectionId, EQteResult.Fail));
         }
 
-        private void OnSessionCompleted(Ac)
+        private void OnSessionTimeout(QteSession session)
         {
-            
+            _inactive.Add(session);
+            session.Timeout -= OnSessionTimeout;
+
+            Fail(session.ConnId);
         }
 
         public void Tick()
         {
             foreach (var sessionEntry in _activeQteSessions)
             {
-                sessionEntry.Value.Update();
+                sessionEntry.Value.Update(_timeProvider.DeltaTime);
             }
+
+            foreach (var session in _inactive)
+            {
+                _activeQteSessions.Remove(session.ConnId);
+            }
+            
+            if (_inactive.Count > 0)
+                _inactive.Clear();
         }
     }
 }
