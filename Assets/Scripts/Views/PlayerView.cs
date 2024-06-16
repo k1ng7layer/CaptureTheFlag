@@ -6,7 +6,16 @@ namespace Views
     public class PlayerView : GameEntityView
     {
         private GameEntity _entity;
-        
+
+        private void Update()
+        {
+            if (_entity == null || isOwned)  
+                    return;
+            
+            _entity.SetPosition(transform.position);
+            _entity.SetRotation(transform.rotation);
+        }
+
         public override void Initialize(GameEntity entity)
         {
             base.Initialize(entity);
@@ -19,15 +28,6 @@ namespace Views
             base.SetupAsClient(entity);
             
             entity.SetColor((EColor)Color);
-        }
-
-        private void Update()
-        {
-            if (_entity == null || isOwned)  
-                    return;
-            
-            _entity.SetPosition(transform.position);
-            _entity.SetRotation(transform.rotation);
         }
     }
 }

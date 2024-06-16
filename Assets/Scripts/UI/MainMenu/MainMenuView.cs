@@ -1,8 +1,6 @@
 ﻿using System;
-using TMPro;
 using UI.Manager;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace UI.MainMenu
@@ -14,6 +12,12 @@ namespace UI.MainMenu
 
         private Action _onHost;
         private Action _onJoin;
+
+        private void OnDestroy()
+        {
+            _hostButton.onClick.RemoveListener(OnHost);
+            _hostButton.onClick.RemoveListener(OnJoin);
+        }
 
         public void Initialize(Action onHost, Action onJoin)
         {
@@ -34,12 +38,6 @@ namespace UI.MainMenu
         {
             _joinButton.interactable = false;
             _onJoin?.Invoke();
-        }
-
-        private void OnDestroy()
-        {
-            _hostButton.onClick.RemoveListener(OnHost);
-            _hostButton.onClick.RemoveListener(OnJoin);
         }
     }
 }

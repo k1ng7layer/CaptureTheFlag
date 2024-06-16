@@ -1,8 +1,4 @@
 ﻿using System;
-using Settings;
-using Unity.VisualScripting;
-using UnityEngine;
-using Views;
 
 namespace Entitites
 {
@@ -12,7 +8,7 @@ namespace Entitites
         public float CaptureTimeLeft { get; private set; }
         public bool Captured { get; private set; }
         public bool UnderCapture { get;private set; }
-        
+
         public event Action<float> CaptureRadiusChanged;
         public event Action<float> CaptureTimeLeftChanged;
         public event Action<FlagEntity> CaptureCompleted;
@@ -21,7 +17,7 @@ namespace Entitites
         {
             UnderCapture = value;
         }
-        
+
         public void ChangeCaptureRadius(float value)
         {
             CaptureRadius = value;
@@ -39,6 +35,5 @@ namespace Entitites
             Captured = value;
             CaptureCompleted?.Invoke(this);
         }
-        
     }
 }

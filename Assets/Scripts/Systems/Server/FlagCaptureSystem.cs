@@ -1,23 +1,20 @@
 ﻿using Entitites;
 using Services.FlagRepository;
 using Services.PlayerRepository;
-using Services.PlayerRepository.Impl;
 using Services.QTE.Server;
-using Services.QTE.Server.Impl;
 using Services.Time;
 using Settings;
 using UI.QteResult;
-using UnityEngine;
 
 namespace Systems.Server
 {
     public class FlagCaptureSystem : IUpdateSystem
     {
-        private readonly ITimeProvider _timeProvider;
-        private readonly IPlayerRepository _playerRepository;
         private readonly IFlagRepository _flagRepository;
-        private readonly IQteServerService _qteServerService;
         private readonly FlagSettings _flagSettings;
+        private readonly IPlayerRepository _playerRepository;
+        private readonly IQteServerService _qteServerService;
+        private readonly ITimeProvider _timeProvider;
 
         public FlagCaptureSystem(
             ITimeProvider timeProvider, 
@@ -33,7 +30,7 @@ namespace Systems.Server
             _qteServerService = qteServerService;
             _flagSettings = flagSettings;
         }
-        
+
         public void Update()
         {
             foreach (var player in _playerRepository.Players)

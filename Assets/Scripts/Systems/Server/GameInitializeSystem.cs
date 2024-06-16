@@ -15,12 +15,12 @@ namespace Systems.Server
 {
     public class GameInitializeSystem : IInitializable, IDisposable
     {
-        private readonly IPlayerSpawnService _playerSpawnService;
-        private readonly IFlagSpawnService _flagSpawnService;
-        private readonly IFlagRepository _flagRepository;
-        private readonly IGameStateService _gameStateService;
-        private readonly GameSettings _gameSettings;
         private readonly Queue<EColor> _colors = new();
+        private readonly IFlagRepository _flagRepository;
+        private readonly IFlagSpawnService _flagSpawnService;
+        private readonly GameSettings _gameSettings;
+        private readonly IGameStateService _gameStateService;
+        private readonly IPlayerSpawnService _playerSpawnService;
         private List<ConnectionGameState> _gameConnections = new();
 
         public GameInitializeSystem(
@@ -37,7 +37,12 @@ namespace Systems.Server
             _gameStateService = gameStateService;
             _gameSettings = gameSettings;
         }
-        
+
+        public void Dispose()
+        {
+            NetworkServer.UnregisterHandler<PlayerReadyMessage>();
+        }
+
         public void Initialize()
         {
             NetworkServer.RegisterHandler<PlayerReadyMessage>(HostInitializePlayer);
@@ -46,11 +51,6 @@ namespace Systems.Server
             {
                 _colors.Enqueue(color);
             }
-        }
-        
-        public void Dispose()
-        {
-            NetworkServer.UnregisterHandler<PlayerReadyMessage>();
         }
 
         private void HostInitializePlayer(

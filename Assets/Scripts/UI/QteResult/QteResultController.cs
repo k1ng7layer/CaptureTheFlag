@@ -1,6 +1,5 @@
 ﻿using System;
 using Services.PlayerRepository;
-using Services.PlayerRepository.Impl;
 using Services.QTE.Client;
 using Settings;
 using UI.Manager;
@@ -12,8 +11,8 @@ namespace UI.QteResult
         IInitializable, 
         IDisposable
     {
-        private readonly IQteClientService _qteClientService;
         private readonly IPlayerRepository _playerRepository;
+        private readonly IQteClientService _qteClientService;
         private readonly QteSettings _qteSettings;
 
         public QteResultController(
@@ -27,16 +26,16 @@ namespace UI.QteResult
             _qteSettings = qteSettings;
         }
 
+        public void Dispose()
+        {
+            _qteClientService.QteCompleted -= HandleQteFail;
+        }
+
         public void Initialize()
         {
             _qteClientService.QteFailed += HandleQteFail;
             View.Hide();
             View.DisplayText("");
-        }
-        
-        public void Dispose()
-        {
-            _qteClientService.QteCompleted -= HandleQteFail;
         }
 
         private void HandleQteFail(EColor loser)

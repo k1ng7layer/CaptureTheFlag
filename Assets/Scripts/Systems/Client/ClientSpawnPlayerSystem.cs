@@ -2,7 +2,6 @@
 using Factories;
 using Mirror;
 using Services.PlayerRepository;
-using Services.PlayerRepository.Impl;
 using Services.Spawn;
 using Settings;
 using UnityEngine;
@@ -14,10 +13,10 @@ namespace Systems.Client
 {
     public class ClientSpawnPlayerSystem : IInitializable, IDisposable
     {
-        private readonly ISpawnService _spawnService;
-        private readonly PrefabBase _prefabBase;
         private readonly PlayerEntityFactory _playerEntityFactory;
         private readonly IPlayerRepository _playerRepository;
+        private readonly PrefabBase _prefabBase;
+        private readonly ISpawnService _spawnService;
 
         public ClientSpawnPlayerSystem(
             ISpawnService spawnService, 
@@ -30,17 +29,17 @@ namespace Systems.Client
             _playerEntityFactory = playerEntityFactory;
             _playerRepository = playerRepository;
         }
-        
-        public void Initialize()
-        {
-            NetworkClient.RegisterPrefab(_prefabBase.Get("Player"), OnClientPlayerSpawn, OnPlayerDeSpawn);
-        }
-        
+
         public void Dispose()
         {
             NetworkClient.UnregisterPrefab(_prefabBase.Get("Player"));
         }
-        
+
+        public void Initialize()
+        {
+            NetworkClient.RegisterPrefab(_prefabBase.Get("Player"), OnClientPlayerSpawn, OnPlayerDeSpawn);
+        }
+
         private GameObject OnClientPlayerSpawn(Vector3 position, uint assetId)
         {
             var view = _spawnService.Spawn("Player", Vector3.zero, Quaternion.identity);
@@ -49,12 +48,12 @@ namespace Systems.Client
             
             return view.Transform.gameObject;
         }
-        
+
         private void OnPlayerDeSpawn(GameObject gameObject)
         {
             Object.Destroy(gameObject);
         }
-        
+
         private void OnLocalPlayerSpawned(IEntityView view)
         {
             view.LocalPlayerStarted -= OnLocalPlayerSpawned;

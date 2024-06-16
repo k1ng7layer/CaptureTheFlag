@@ -7,9 +7,9 @@ namespace UI.Manager
 {
     public class UiManager : IInitializable, IDisposable
     {
+        private readonly Dictionary<Type, IUiController> _controllers = new();
         private readonly SignalBus _signalBus;
         private readonly Dictionary<Type, IUiWindow> _windows = new();
-        private readonly Dictionary<Type, IUiController> _controllers = new();
         private IUiWindow _currentWindow;
 
         public UiManager(SignalBus signalBus, 
@@ -33,14 +33,14 @@ namespace UI.Manager
             }
         }
 
-        public void Initialize()
-        {
-            _signalBus.Subscribe<SignalOpenWindow>(OpenNewWindow);
-        }
-
         public void Dispose()
         {
             _signalBus.Unsubscribe<SignalOpenWindow>(OpenNewWindow);
+        }
+
+        public void Initialize()
+        {
+            _signalBus.Subscribe<SignalOpenWindow>(OpenNewWindow);
         }
 
         private void OpenNewWindow(SignalOpenWindow signal)
@@ -51,7 +51,7 @@ namespace UI.Manager
             var window = _windows[signal.WindowType];
             OpenWindow(window);
         }
-        
+
         private void OpenWindow(IUiWindow uiWindow)
         {
             _currentWindow = uiWindow;

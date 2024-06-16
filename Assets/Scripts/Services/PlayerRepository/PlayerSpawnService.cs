@@ -9,9 +9,9 @@ namespace Services.PlayerRepository
 {
     public class PlayerSpawnService : IPlayerSpawnService
     {
-        private readonly ISpawnService _spawnService;
-        private readonly IPlayerRepository _playerRepository;
         private readonly PlayerEntityFactory _playerEntityFactory;
+        private readonly IPlayerRepository _playerRepository;
+        private readonly ISpawnService _spawnService;
 
         public PlayerSpawnService(
             ISpawnService spawnService, 
@@ -23,7 +23,7 @@ namespace Services.PlayerRepository
             _playerRepository = playerRepository;
             _playerEntityFactory = playerEntityFactory;
         }
-        
+
         public GameEntity SpawnPlayer(int connectionId, EColor color)
         {
             var connection = NetworkServer.connections[connectionId];

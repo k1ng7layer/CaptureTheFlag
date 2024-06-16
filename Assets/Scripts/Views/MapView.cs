@@ -3,7 +3,5 @@
 namespace Views
 {
     public class MapView : MonoBehaviour
-    {
-        
-    }
+    {}
 }

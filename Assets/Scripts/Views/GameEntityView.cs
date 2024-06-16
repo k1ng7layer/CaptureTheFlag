@@ -7,48 +7,26 @@ using UnityEngine;
 namespace Views
 {
     public abstract class GameEntityView : NetworkBehaviour, IEntityView
-    { 
-        [SyncVar(hook = nameof(ColorHook))]
-        protected int Color;
-        
+    {
         [SerializeField] protected MeshRenderer _meshRenderer;
         [SerializeField] protected PlayerColorSettings playerColorSettings;
+        private GameEntity _entity;
 
         private Material _material;
-        private GameEntity _entity;
-        
-        public event Action<IEntityView> ClientStarted;
-        public event Action<IEntityView> LocalPlayerStarted;
-        public Transform Transform => transform;
-        public bool IsLocalPlayer => isLocalPlayer;
-        
+
+        [SyncVar(hook = nameof(ColorHook))]
+        protected int Color;
+
         private void Awake()
         {
             _material = _meshRenderer.material;
             OnAwake();
         }
-        
-        protected virtual void OnAwake()
-        { }
 
-        private void ColorHook(int old, int newValue)
-        {
-            var color = playerColorSettings.Get((EColor)Color);
-            _material.color = color;
-            OnColorChanged((EColor)Color);
-        }
-        
-        public override void OnStartClient()
-        {
-            ClientStarted?.Invoke(this);
-            ColorHook(Color, Color);
-            OnClientStart();
-        }
-        
-        public override void OnStartLocalPlayer()
-        {
-            LocalPlayerStarted?.Invoke(this);
-        }
+        public event Action<IEntityView> ClientStarted;
+        public event Action<IEntityView> LocalPlayerStarted;
+        public Transform Transform => transform;
+        public bool IsLocalPlayer => isLocalPlayer;
 
         public virtual void Initialize(GameEntity entity)
         {
@@ -60,19 +38,41 @@ namespace Views
             if (entity.IsServerObject)
                 SetupAsServerObject(entity);
         }
-        
+
+        protected virtual void OnAwake()
+        { }
+
+        private void ColorHook(int old, int newValue)
+        {
+            var color = playerColorSettings.Get((EColor)Color);
+            _material.color = color;
+            OnColorChanged((EColor)Color);
+        }
+
+        public override void OnStartClient()
+        {
+            ClientStarted?.Invoke(this);
+            ColorHook(Color, Color);
+            OnClientStart();
+        }
+
+        public override void OnStartLocalPlayer()
+        {
+            LocalPlayerStarted?.Invoke(this);
+        }
+
         private void ColorChanged(EColor value)
         {
             Color = (int)value;
             ColorHook(Color, Color);
         }
-        
+
         [Server]
         private void SetColor(EColor color)
         {
             Color = (int)color;
         }
-        
+
         private void SetPosition(Vector3 position)
         {
             transform.position = position;
@@ -85,23 +85,23 @@ namespace Views
 
         protected virtual void OnColorChanged(EColor value)
         { }
-        
+
         protected virtual void OnClientStart()
         { }
-        
+
         protected virtual void SetupAsClient(GameEntity entity)
         {
             entity.PositionChanged += SetPosition;
             entity.RotationChanged += SetRotation;
         }
-        
+
         protected virtual void SetupAsServerObject(GameEntity entity)
         {
             entity.ColorChanged += SetColor;
             entity.EntityDestroyed += Destroyed;
             ColorChanged(entity.Color);
         }
-        
+
         private void Destroyed()
         {
             _entity.PositionChanged -= SetPosition;

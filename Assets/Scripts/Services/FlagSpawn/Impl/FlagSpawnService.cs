@@ -11,11 +11,11 @@ namespace Services.FlagSpawn.Impl
 {
     public class FlagSpawnService : IFlagSpawnService
     {
-        private readonly ISpawnService _spawnService;
-        private readonly LevelSettings _levelSettings;
         private readonly FlagEntityFactory _flagEntityFactory;
-        private readonly FlagSettings _flagSettings;
         private readonly Dictionary<EColor, List<FlagEntity>> _flagsEntities = new();
+        private readonly FlagSettings _flagSettings;
+        private readonly LevelSettings _levelSettings;
+        private readonly ISpawnService _spawnService;
 
         public FlagSpawnService(
             ISpawnService spawnService, 

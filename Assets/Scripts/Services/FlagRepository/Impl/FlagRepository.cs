@@ -8,10 +8,10 @@ namespace Services.FlagRepository.Impl
     public class FlagRepository : IFlagRepository
     {
         private readonly Dictionary<EColor, List<FlagEntity>> _flagsEntities = new();
-        
+
         public IReadOnlyDictionary<EColor, List<FlagEntity>> Flags => _flagsEntities;
 
-        public event Action<FlagEntity> Added; 
+        public event Action<FlagEntity> Added;
 
         public void Add(FlagEntity flagEntity)
         {

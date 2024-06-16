@@ -17,18 +17,18 @@ namespace Systems.Client
             _gameStateService = gameStateService;
             _signalBus = signalBus;
         }
-        
+
+        public void Dispose()
+        {
+            _gameStateService.StateChanged -= OnGameStateChanged;
+        }
+
         public void Initialize()
         {
             _signalBus.OpenWindow<MainMenuWindow>();
             _gameStateService.StateChanged += OnGameStateChanged;
         }
-        
-        public void Dispose()
-        {
-            _gameStateService.StateChanged -= OnGameStateChanged;
-        }
-        
+
         private void OnGameStateChanged(EGameState gameState)
         {
             if (gameState == EGameState.Running)

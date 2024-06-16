@@ -16,17 +16,17 @@ namespace UI.GameResult
         {
             _clientGameResultService = clientGameResultService;
         }
-        
+
+        public void Dispose()
+        {
+            _clientGameResultService.GameCompleted -= OnGameCompleted;
+        }
+
         public void Initialize()
         {
             View.Hide();
             
             _clientGameResultService.GameCompleted += OnGameCompleted;
-        }
-        
-        public void Dispose()
-        {
-            _clientGameResultService.GameCompleted -= OnGameCompleted;
         }
 
         private void OnGameCompleted(EColor winner)

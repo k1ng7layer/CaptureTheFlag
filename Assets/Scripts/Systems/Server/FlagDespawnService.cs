@@ -1,6 +1,5 @@
 ﻿using System;
 using Entitites;
-using Mirror;
 using Services.FlagRepository;
 using Zenject;
 
@@ -14,15 +13,15 @@ namespace Systems.Server
         {
             _flagRepository = flagRepository;
         }
-        
-        public void Initialize()
-        {
-            _flagRepository.Added += OnFlagCreated;
-        }
-        
+
         public void Dispose()
         {
             _flagRepository.Added -= OnFlagCreated;
+        }
+
+        public void Initialize()
+        {
+            _flagRepository.Added += OnFlagCreated;
         }
 
         private void OnFlagCreated(FlagEntity flagEntity)

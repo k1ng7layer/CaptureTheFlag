@@ -7,8 +7,8 @@ using Services.PlayerRepository;
 using Services.Time;
 using Settings;
 using UI.QteResult;
-using UnityEngine;
 using Zenject;
+using Random = UnityEngine.Random;
 
 namespace Services.QTE.Server.Impl
 {
@@ -17,12 +17,12 @@ namespace Services.QTE.Server.Impl
         IDisposable,
         ITickable
     {
-        private readonly QteSettings _qteSettings;
-        private readonly ITimeProvider _timeProvider;
-        private readonly IPlayerRepository _playerRepository;
-        private readonly IServerGameResultService _serverGameResultService;
         private readonly Dictionary<int, QteSession> _activeQteSessions = new();
         private readonly List<QteSession> _inactive = new();
+        private readonly IPlayerRepository _playerRepository;
+        private readonly QteSettings _qteSettings;
+        private readonly IServerGameResultService _serverGameResultService;
+        private readonly ITimeProvider _timeProvider;
 
         public QteServerService(
             QteSettings qteSettings,
@@ -36,30 +36,30 @@ namespace Services.QTE.Server.Impl
             _playerRepository = playerRepository;
             _serverGameResultService = serverGameResultService;
         }
-        
-        public event Action<ServerQteResultArgs> QteCompleted;
-        
-        public void Initialize()
-        {
-            NetworkServer.RegisterHandler<QteResolveMessage>(OnQteResolve);
-            _serverGameResultService.GameCompleted += StopAllQte;
-        }
-        
+
         public void Dispose()
         {
             NetworkServer.UnregisterHandler<QteResolveMessage>();
             _serverGameResultService.GameCompleted -= StopAllQte;
         }
 
+        public void Initialize()
+        {
+            NetworkServer.RegisterHandler<QteResolveMessage>(OnQteResolve);
+            _serverGameResultService.GameCompleted += StopAllQte;
+        }
+
+        public event Action<ServerQteResultArgs> QteCompleted;
+
         public void StartQteSession(int connectionId)
         {
             if (!NetworkServer.connections.TryGetValue(connectionId, out var conn))
                 return;
             
-            var zoneWidth = UnityEngine.Random.Range(_qteSettings.MinSuccessZoneNormalizedWidth, 
+            var zoneWidth = Random.Range(_qteSettings.MinSuccessZoneNormalizedWidth, 
                 _qteSettings.MaxSuccessZoneNormalizedWidth);
 
-            var zoneStart = UnityEngine.Random.Range(0f, 1f - zoneWidth);
+            var zoneStart = Random.Range(0f, 1f - zoneWidth);
             
             conn.Send(new StartQteMessage
             {
@@ -87,12 +87,28 @@ namespace Services.QTE.Server.Impl
             _inactive.Remove(session);
         }
 
+        public void Tick()
+        {
+            foreach (var sessionEntry in _activeQteSessions)
+            {
+                sessionEntry.Value.Update(_timeProvider.DeltaTime);
+            }
+
+            foreach (var session in _inactive)
+            {
+                _activeQteSessions.Remove(session.ConnId);
+            }
+            
+            if (_inactive.Count > 0)
+                _inactive.Clear();
+        }
+
         private void StopAllQte(EColor _)
         {
             _activeQteSessions.Clear();
             _inactive.Clear();
         }
-        
+
         private void OnQteResolve(
             NetworkConnectionToClient conn, 
             QteResolveMessage msg
@@ -122,7 +138,7 @@ namespace Services.QTE.Server.Impl
         {
             QteCompleted?.Invoke(new ServerQteResultArgs(connectionId, EQteResult.Success));
         }
-        
+
         private void Fail(int connectionId)
         {
             var player = _playerRepository.PlayerEntities[connectionId];
@@ -142,22 +158,6 @@ namespace Services.QTE.Server.Impl
             session.Timeout -= OnSessionTimeout;
 
             Fail(session.ConnId);
-        }
-
-        public void Tick()
-        {
-            foreach (var sessionEntry in _activeQteSessions)
-            {
-                sessionEntry.Value.Update(_timeProvider.DeltaTime);
-            }
-
-            foreach (var session in _inactive)
-            {
-                _activeQteSessions.Remove(session.ConnId);
-            }
-            
-            if (_inactive.Count > 0)
-                _inactive.Clear();
         }
     }
 }

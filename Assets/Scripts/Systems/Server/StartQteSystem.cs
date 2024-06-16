@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Entitites;
 using Services.PlayerRepository;
-using Services.PlayerRepository.Impl;
 using Services.QTE.Server;
 using Services.Time;
 using Settings;
@@ -13,13 +12,13 @@ namespace Systems.Server
 {
     public class StartQteSystem : IInitializable, IUpdateSystem, IDisposable
     {
-        private readonly IQteServerService _qteServerService;
-        private readonly ITimeProvider _timeProvider;
-        private readonly IPlayerRepository _playerRepository;
-        private readonly QteSettings _qteSettings;
         private readonly FlagSettings _flagSettings;
-        private readonly Dictionary<int, QteDelayedStart> _pendingQte = new();
         private readonly List<QteDelayedStart> _inactive = new();
+        private readonly Dictionary<int, QteDelayedStart> _pendingQte = new();
+        private readonly IPlayerRepository _playerRepository;
+        private readonly IQteServerService _qteServerService;
+        private readonly QteSettings _qteSettings;
+        private readonly ITimeProvider _timeProvider;
 
         public StartQteSystem(
             IQteServerService qteServerService,
@@ -34,24 +33,40 @@ namespace Systems.Server
             _qteSettings = qteSettings;
             _flagSettings = flagSettings;
         }
-        
-        public void Initialize()
-        {
-            _playerRepository.Added += Init;
-            _playerRepository.Removed += RemoveQte;
-        }
-        
+
         public void Dispose()
         {
             _playerRepository.Added -= Init;
             _playerRepository.Removed -= RemoveQte;
         }
 
+        public void Initialize()
+        {
+            _playerRepository.Added += Init;
+            _playerRepository.Removed += RemoveQte;
+        }
+
+        public void Update()
+        {
+            foreach (var qteDelayedStart in _pendingQte)
+            {
+                qteDelayedStart.Value.Tick(_timeProvider.DeltaTime);
+            }
+
+            foreach (var inactive in _inactive)
+            {
+                _pendingQte.Remove(inactive.ConnectionId);
+            }
+            
+            if (_inactive.Count > 0)
+                _inactive.Clear();
+        }
+
         private void Init(PlayerEntity playerEntity)
         {
             playerEntity.CapturingChanged += PrepareQte;
         }
-        
+
         private void PrepareQte(bool capturing, PlayerEntity player)
         {
             if (!capturing)
@@ -99,22 +114,6 @@ namespace Systems.Server
         {
             entity.CapturingChanged -= PrepareQte;
             _pendingQte.Remove(entity.OwnerId);
-        }
-
-        public void Update()
-        {
-            foreach (var qteDelayedStart in _pendingQte)
-            {
-                qteDelayedStart.Value.Tick(_timeProvider.DeltaTime);
-            }
-
-            foreach (var inactive in _inactive)
-            {
-                _pendingQte.Remove(inactive.ConnectionId);
-            }
-            
-            if (_inactive.Count > 0)
-                _inactive.Clear();
         }
     }
 }

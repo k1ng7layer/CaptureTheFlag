@@ -1,22 +1,21 @@
-﻿using System;
-using Entitites;
+﻿using Entitites;
 using Mirror;
 using Settings;
-using UnityEditor;
 using UnityEngine;
 
 namespace Views
 {
     public class FlagView : GameEntityView
     {
-        [SyncVar(hook = nameof(SetRadiusHook))]
-        private float _radius;
-        
         [SerializeField] private SpriteRenderer _radiusSprite;
-        private Material _radiusMaterial;
 
         private FlagEntity _flagEntity;
-        
+
+        [SyncVar(hook = nameof(SetRadiusHook))]
+        private float _radius;
+
+        private Material _radiusMaterial;
+
         protected override void OnAwake()
         {
             _radiusMaterial = _radiusSprite.material;

@@ -10,8 +10,6 @@ namespace UI.Input
 
         public Joystick Joystick => _joystick;
 
-        public event Action<Vector3> Dragged;
-
         private void Update()
         {
             // if (_joystick.Horizontal != 0f || _joystick.Vertical != 0f)
@@ -21,5 +19,7 @@ namespace UI.Input
             
             Dragged?.Invoke(new Vector3(_joystick.Horizontal, 0f, _joystick.Vertical));
         }
+
+        public event Action<Vector3> Dragged;
     }
 }

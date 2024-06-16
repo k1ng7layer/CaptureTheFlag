@@ -1,7 +1,6 @@
 ﻿using System;
 using Services.FlagRepository;
 using Services.PlayerRepository;
-using Services.PlayerRepository.Impl;
 using Services.QTE.Server;
 using Settings;
 using UI.QteResult;
@@ -11,9 +10,9 @@ namespace Systems.Server
 {
     public class QteFailSystem : IInitializable, IDisposable
     {
-        private readonly IQteServerService _qteServerService;
         private readonly IFlagRepository _flagRepository;
         private readonly IPlayerRepository _playerRepository;
+        private readonly IQteServerService _qteServerService;
         private readonly QteSettings _qteSettings;
 
         public QteFailSystem(
@@ -28,15 +27,15 @@ namespace Systems.Server
             _playerRepository = playerRepository;
             _qteSettings = qteSettings;
         }
-        
-        public void Initialize()
-        {
-            _qteServerService.QteCompleted += OnQteCompleted;
-        }
-        
+
         public void Dispose()
         {
             _qteServerService.QteCompleted -= OnQteCompleted;
+        }
+
+        public void Initialize()
+        {
+            _qteServerService.QteCompleted += OnQteCompleted;
         }
 
         private void OnQteCompleted(ServerQteResultArgs resultArgs)

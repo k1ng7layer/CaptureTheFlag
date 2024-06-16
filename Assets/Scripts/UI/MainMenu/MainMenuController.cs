@@ -1,7 +1,6 @@
 ﻿using System;
 using Mirror;
 using Services.Network;
-using UI.GamePending;
 using UI.Manager;
 using UI.Signals;
 using UI.Windows;
@@ -21,16 +20,16 @@ namespace UI.MainMenu
             _netManager = netManager;
             _signalBus = signalBus;
         }
-        
+
+        public void Dispose()
+        {
+            _netManager.ClientConnectedToServer -= OnConnectedToServer;
+        }
+
         public void Initialize()
         {
             View.Initialize(HostGame, JoinGame);
             _netManager.ClientConnectedToServer += OnConnectedToServer;
-        }
-        
-        public void Dispose()
-        {
-            _netManager.ClientConnectedToServer -= OnConnectedToServer;
         }
 
         private void HostGame()
@@ -45,7 +44,7 @@ namespace UI.MainMenu
             NetworkManager.singleton.StartClient();
             _signalBus.OpenWindow<GamePendingWindow>();
         }
-        
+
         private void OnConnectedToServer()
         {
             View.Hide();

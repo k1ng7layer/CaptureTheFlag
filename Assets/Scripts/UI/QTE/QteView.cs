@@ -14,13 +14,13 @@ namespace UI.QTE
 
         private float _bgWidth;
         private Rect _successZoneRect;
-        
-        public event Action Clicked;
-         
+
         public void OnPointerClick(PointerEventData eventData)
         {
             Clicked?.Invoke();
         }
+
+        public event Action Clicked;
 
         public void InitializeSuccessZone(float normalizedStart, float normalizedWidth)
         {
@@ -30,7 +30,7 @@ namespace UI.QTE
             successZone.rectTransform.sizeDelta = new Vector2(_bgWidth * normalizedWidth, _successZoneRect.height);
             successZone.rectTransform.anchoredPosition = new Vector2(_bgWidth * normalizedStart, 0f);
         }
-        
+
         public void SetSliderValue(float normalizedOffset)
         {
             var sliderWidth = slider.rectTransform.rect.width;

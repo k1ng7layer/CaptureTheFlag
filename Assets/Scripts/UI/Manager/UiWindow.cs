@@ -8,10 +8,10 @@ namespace UI.Manager
         public List<Type> Controllers { get; } = new();
 
         public abstract void Setup();
-        
+
         protected void AddController<T>() where T : IUiController
         {
             Controllers.Add(typeof(T));
-        } 
+        }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using Services;
 using Services.Input;
 using UI.Manager;
 using UnityEngine;
@@ -17,15 +16,15 @@ namespace UI.Input
         {
             _inputService = inputService;
         }
-        
-        public void Initialize()
-        {
-            View.Dragged += OnMovement;
-        }
-        
+
         public void Dispose()
         {
             View.Dragged -= OnMovement;
+        }
+
+        public void Initialize()
+        {
+            View.Dragged += OnMovement;
         }
 
         private void OnMovement(Vector3 dir)

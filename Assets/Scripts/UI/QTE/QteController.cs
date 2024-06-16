@@ -1,12 +1,8 @@
 ﻿using System;
 using Services.PlayerRepository;
-using Services.PlayerRepository.Impl;
-using Services.QTE;
 using Services.QTE.Client;
 using Settings;
 using UI.Manager;
-using UI.QteResult;
-using UnityEngine;
 using Zenject;
 
 namespace UI.QTE
@@ -16,8 +12,8 @@ namespace UI.QTE
         ITickable, 
         IDisposable
     {
-        private readonly IQteClientService _qteClientService;
         private readonly IPlayerRepository _playerRepository;
+        private readonly IQteClientService _qteClientService;
         private bool _opened;
 
         public QteController(
@@ -28,7 +24,13 @@ namespace UI.QTE
             _qteClientService = qteClientService;
             _playerRepository = playerRepository;
         }
-        
+
+        public void Dispose()
+        {
+            _qteClientService.Started -= BeginQteClient;
+            View.Clicked -= ResolveQte;
+        }
+
         public void Initialize()
         {
             _qteClientService.Started += BeginQteClient;
@@ -37,11 +39,10 @@ namespace UI.QTE
             View.Clicked += ResolveQte;
             Hide();
         }
-        
-        public void Dispose()
+
+        public void Tick()
         {
-            _qteClientService.Started -= BeginQteClient;
-            View.Clicked -= ResolveQte;
+            View.SetSliderValue(_qteClientService.CurrentValue);
         }
 
         protected override void OnShow()
@@ -85,11 +86,6 @@ namespace UI.QTE
         {
             View.Hide();
             _opened = false;
-        }
-
-        public void Tick()
-        {
-            View.SetSliderValue(_qteClientService.CurrentValue);
         }
     }
 }

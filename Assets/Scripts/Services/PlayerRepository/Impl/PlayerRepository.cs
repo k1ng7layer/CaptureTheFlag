@@ -6,9 +6,9 @@ namespace Services.PlayerRepository.Impl
 {
     public class PlayerRepository : IPlayerRepository
     {
-        private readonly List<PlayerEntity> _players = new();
         private readonly Dictionary<int, PlayerEntity> _playerEntities = new();
-        
+        private readonly List<PlayerEntity> _players = new();
+
         public GameEntity LocalPlayer { get; private set; }
         public List<PlayerEntity> Players => _players;
         public IReadOnlyDictionary<int, PlayerEntity> PlayerEntities => _playerEntities;

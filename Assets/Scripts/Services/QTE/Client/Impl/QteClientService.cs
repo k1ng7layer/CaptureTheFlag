@@ -15,13 +15,13 @@ namespace Services.QTE.Client.Impl
         IInitializable, 
         IDisposable
     {
-        private readonly ITimeProvider _timeProvider;
-        private readonly QteSettings _qteSettings;
-        private readonly IPlayerRepository _playerRepository;
         private readonly IClientGameResultService _gameResultService;
+        private readonly IPlayerRepository _playerRepository;
+        private readonly QteSettings _qteSettings;
+        private readonly ITimeProvider _timeProvider;
+        private QteParams _currentQteParams;
         private bool _inProcess;
         private int _multiplier;
-        private QteParams _currentQteParams;
 
         public QteClientService(
             ITimeProvider timeProvider, 
@@ -35,22 +35,7 @@ namespace Services.QTE.Client.Impl
             _playerRepository = playerRepository;
             _gameResultService = gameResultService;
         }
-        
-        public float CurrentValue { get; private set; }
-        public bool Running => _inProcess;
 
-        public event Action<EColor> QteCompleted;
-        public event Action<EColor> QteFailed;
-        public event Action<QteParams> Started;
-        
-        public void Initialize()
-        {
-            NetworkClient.RegisterHandler<StartQteMessage>(OnQteBegin);
-            NetworkClient.RegisterHandler<QteResultMessage>(OnQteResult);
-
-            _gameResultService.GameCompleted += OnGameEnd;
-        }
-        
         public void Dispose()
         {
             NetworkClient.UnregisterHandler<StartQteMessage>();
@@ -58,7 +43,22 @@ namespace Services.QTE.Client.Impl
             
             _gameResultService.GameCompleted -= OnGameEnd;
         }
-        
+
+        public void Initialize()
+        {
+            NetworkClient.RegisterHandler<StartQteMessage>(OnQteBegin);
+            NetworkClient.RegisterHandler<QteResultMessage>(OnQteResult);
+
+            _gameResultService.GameCompleted += OnGameEnd;
+        }
+
+        public float CurrentValue { get; private set; }
+        public bool Running => _inProcess;
+
+        public event Action<EColor> QteCompleted;
+        public event Action<EColor> QteFailed;
+        public event Action<QteParams> Started;
+
         public void Resolve()
         {
             if (!_inProcess)
@@ -67,6 +67,26 @@ namespace Services.QTE.Client.Impl
             _inProcess = false;
             
             NetworkClient.Send(new QteResolveMessage{Value = CurrentValue});
+        }
+
+        public void Tick()
+        {
+            if (!_inProcess)
+                return;
+
+            CurrentValue += _timeProvider.DeltaTime * _qteSettings.SliderSpeed * _multiplier;
+
+            if (CurrentValue >= 1f)
+            {
+                CurrentValue = 1f;
+                _multiplier *= -1;
+            }
+
+            if (CurrentValue <= 0)
+            {
+                CurrentValue = 0;
+                _multiplier *= -1;
+            }
         }
 
         private void OnGameEnd(EColor _)
@@ -93,26 +113,6 @@ namespace Services.QTE.Client.Impl
             
             if (msg.Result == EQteResult.Success)
                 QteCompleted?.Invoke(msg.FailedTeam);
-        }
-        
-        public void Tick()
-        {
-            if (!_inProcess)
-                return;
-
-            CurrentValue += _timeProvider.DeltaTime * _qteSettings.SliderSpeed * _multiplier;
-
-            if (CurrentValue >= 1f)
-            {
-                CurrentValue = 1f;
-                _multiplier *= -1;
-            }
-
-            if (CurrentValue <= 0)
-            {
-                CurrentValue = 0;
-                _multiplier *= -1;
-            }
         }
     }
 }

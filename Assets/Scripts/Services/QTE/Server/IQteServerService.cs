@@ -1,6 +1,4 @@
 ﻿using System;
-using Services.QTE.Client;
-using Settings;
 using UI.QteResult;
 
 namespace Services.QTE.Server

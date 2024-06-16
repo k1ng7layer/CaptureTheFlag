@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using Mirror;
-using Services.Input.Impl;
-using Services.Network;
-using Services.Spawn;
-using Settings;
+﻿using System.Collections.Generic;
 using Systems;
-using UI.Input;
-using UnityEngine;
 using Zenject;
 
 namespace Core
