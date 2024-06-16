@@ -588,7 +588,6 @@ GameObject:
   - component: {fileID: 857026787}
   - component: {fileID: 857026788}
   - component: {fileID: 857026790}
-  - component: {fileID: 857026789}
   - component: {fileID: 857026791}
   m_Layer: 0
   m_Name: NetworkManager
@@ -659,19 +658,6 @@ MonoBehaviour:
   evaluationMethod: 0
   evaluationInterval: 3
   timeInterpolationGui: 0
---- !u!114 &857026789
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 857026784}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 88c37d3deca7a834d80cfd8d3cfcc510, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  networkDiscovery: {fileID: 857026790}
 --- !u!114 &857026790
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -692,7 +678,7 @@ MonoBehaviour:
   OnServerFound:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 857026789}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: Mirror.Discovery.NetworkDiscoveryHUD, Mirror.Components
         m_MethodName: OnDiscoveredServer
         m_Mode: 0
